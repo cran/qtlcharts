@@ -1,4 +1,4 @@
-4643ec7b20cdf21617fc5ea2854fb9b0 *DESCRIPTION
+5fa8bd9735938c689498b713874536ff *DESCRIPTION
 39ac762f7e4f5006eba4d6c0a88cdefb *LICENSE
 9f30d2a534440d815325a7bf0bdd182c *NAMESPACE
 e7b8aa8f3e90cea869c0e1ef442d4f9b *R/chartOpts.R
@@ -27,15 +27,15 @@ efe4a9c130c15ab2b19bbf2ef05fb228 *R/qtlcharts.R
 3503eb5e278f4b9740e84704bac04ac2 *R/qtlchartsversion.R
 2dde5021f55c8b4b4bd9de83e894d0b8 *R/setScreenSize.R
 3d469c1c128a150fe7510b1ef2de2306 *R/util.R
-38c6061851ab4a18adabca30cba851ea *build/vignette.rds
+c7f846693ab7931da899f3e916ec0552 *build/vignette.rds
 199387adf5ea55c86a5312c44468f0e3 *configure
 a542a6a349e703bfae6259c6a53b191c *configure.win
 d7f4d4fe79b8734e24efdaeecfedeb2b *data/geneExpr.rda
 60d75023c9a9e730fe511eb55d76ef3b *data/grav.rda
 e0aafb8eeae9509142aceaa3de017bee *inst/CITATION
 39ac762f7e4f5006eba4d6c0a88cdefb *inst/LICENSE
-a78e60acc6f0521477c136c3369ddfb3 *inst/NEWS.md
-351b3c00b8d18202c5a01cddd820304f *inst/ReadMe.md
+cf1b9360e7ce6cc256255ac35b6e3814 *inst/NEWS.md
+71802a1756bf6d88559ea71c2fe0b891 *inst/ReadMe.md
 86fa56ce432fbfa7e77d9060f28270f7 *inst/ToDo.md
 f8f7e8d9e132ace3ea17c066bdfde640 *inst/doc/Rmarkdown.R
 4804b5b576cf4376e9153614faa58682 *inst/doc/Rmarkdown.Rmd
@@ -168,7 +168,7 @@ b8625749904e682496c5aa58fb3f42a8 *man/iplotScanone.Rd
 7772631a6ea8d8dccc4e62f6a86f8546 *man/qtlcharts-shiny.Rd
 dc32d05b3bc247b42e99ffa76feb625c *man/qtlchartsversion.Rd
 2bc71ea5a836c27a3c7663be7f15260b *man/setScreenSize.Rd
-478b6fd5df7bd39b6d9ee95db886accd *tests/Rmdtest.R
+d0037505b18611c39ea5900c4f8446c9 *tests/Rmdtest.R
 9c3706aef56c3a437c061cfa3cd36dd2 *tests/Rmdtest/Rmdtest.Rmd
 b96f3debb925ab6134f56c7f9a38609d *tests/Rmdtest/iboxplot.Rmd
 35066964b49b453c0cab9691b52283a8 *tests/Rmdtest/idotplot.Rmd
@@ -182,7 +182,7 @@ f55ce173b22365b1d7e163262946af2f *tests/Rmdtest/iplotPXG.Rmd
 3869b5db700d1e77d86ae518c1461151 *tests/Rmdtest/iplotRF.Rmd
 c0de5e276f3ec53ae319989e4bf13692 *tests/Rmdtest/iplotScanone.Rmd
 e9837f47e304492b5d9dd49e77054f12 *tests/Rmdtest/iplotScantwo.Rmd
-e636f9474fd43f536334af9d15ecd84e *tests/htmltest.R
+e41b671fb1deb8cbba8a6d8ea9261923 *tests/htmltest.R
 17008f40801e4dc087ca4d4c4686d052 *tests/htmltest/iboxplot.R
 c4fba6928df763791e40378c6627d35f *tests/htmltest/idotplot.R
 c7b3c0587ad8e461653155924d44a795 *tests/htmltest/iheatmap.R

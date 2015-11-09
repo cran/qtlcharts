@@ -1,6 +1,6 @@
 Package: qtlcharts
-Version: 0.5-23
-Date: 2015-11-07
+Version: 0.5-25
+Date: 2015-11-09
 Title: Interactive Graphics for QTL Experiments
 Author: Karl W Broman [aut, cre],
   Michael Bostock [ctb, cph] (d3.js library in htmlwidgets/lib, http://d3js.org),
@@ -45,6 +45,6 @@ Authors@R: c(
     person(family = "jQuery UI contributors", role = "ctb",
            comment = "jQuery UI library in htmlwidgets/lib; see http://jqueryui.com/about"))
 NeedsCompilation: no
-Packaged: 2015-11-07 20:05:18 UTC; kbroman
+Packaged: 2015-11-09 14:55:05 UTC; kbroman
 Repository: CRAN
-Date/Publication: 2015-11-08 08:40:35
+Date/Publication: 2015-11-09 17:16:08
