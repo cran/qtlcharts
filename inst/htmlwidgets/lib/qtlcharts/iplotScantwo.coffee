@@ -32,7 +32,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
 
     # htmlwidget div element containing the chart, and its ID
     div = d3.select(widgetdiv)
-    widgetid = div.attr("id")
+    widgetdivid = div.attr("id")
 
     # size of heatmap region
     totmar = sumArray(scantwo_data.nmar)
@@ -76,7 +76,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
               .style("float", "left")
               .style("margin-left", "50px")
     leftsel = left.append("select")
-                  .attr("id", "leftselect_#{widgetid}")
+                  .attr("id", "leftselect_#{widgetdivid}")
                   .attr("name", "left")
     leftsel.selectAll("empty")
            .data(options)
@@ -92,7 +92,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                 .style("float", "left")
                 .style("margin-left", "50px")
     rightsel = right.append("select")
-                    .attr("id", "rightselect_#{widgetid}")
+                    .attr("id", "rightselect_#{widgetdivid}")
                     .attr("name", "right")
     rightsel.selectAll("empty")
             .data(options)
@@ -110,9 +110,9 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                  .attr("name", "refresh")
                  .text("Refresh")
                  .on "click", () ->
-                     leftsel = document.getElementById("leftselect_#{widgetid}")
+                     leftsel = document.getElementById("leftselect_#{widgetdivid}")
                      leftvalue = leftsel.options[leftsel.selectedIndex].value
-                     rightsel = document.getElementById("rightselect_#{widgetid}")
+                     rightsel = document.getElementById("rightselect_#{widgetdivid}")
                      rightvalue = rightsel.options[rightsel.selectedIndex].value
 
                      scantwo_data.z = lod_for_heatmap(scantwo_data, leftvalue, rightvalue)
@@ -144,6 +144,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                                .zthresh(zthresh)
                                .oneAtTop(oneAtTop)
                                .hover(false)
+                               .tipclass(widgetdivid)
 
     g_heatmap = svg.append("g")
                    .attr("id", "chrheatmap")
@@ -152,10 +153,9 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
 
     # function to add tool tips and handle clicking
     add_cell_tooltips = () ->
-        d3.selectAll(".d3-tip##{widgetid}").remove()
+        d3.selectAll("div.d3-tip.#{widgetdivid}").remove()
         celltip = d3.tip()
-                    .attr("class", "d3-tip")
-                    .attr("id", widgetid)
+                    .attr("class", "d3-tip #{widgetdivid}")
                     .html((d) ->
                             mari = scantwo_data.labels[d.i]
                             marj = scantwo_data.labels[d.j]
@@ -195,11 +195,12 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
     add_cell_tooltips()
 
     # to hold groups and positions of scan and effect plots
-    g_scans = [[null,null], [null,null]]
+    mylodchart = [[null,null], [null,null]]
     scans_hpos = [0, wbot+margin.left+margin.right]
     scans_vpos = [heatmap_height, heatmap_height+hbot+margin.top+margin.bottom]
 
-    g_eff = [null, null]
+    mydotchart = null
+    mycichart = null
     eff_hpos = [heatmap_width, heatmap_width]
     eff_vpos = [0, heatmap_height/2]
 
@@ -212,29 +213,30 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
             lod: (x for x in scantwo_data[lod][markerindex])
             markernames: scantwo_data.labels
 
-        g_scans[panelrow][panelcol].remove() if g_scans[panelrow][panelcol]?
+        mylodchart[panelrow][panelcol].remove() if mylodchart[panelrow][panelcol]?
 
-        mylodchart = lodchart().height(hbot)
-                               .width(wbot)
-                               .margin(margin)
-                               .axispos(axispos)
-                               .ylim([0.0, scantwo_data.max[lod]])
-                               .lightrect(lightrect)
-                               .darkrect(darkrect)
-                               .linewidth(linewidth)
-                               .linecolor(linecolor)
-                               .pointsize(0)
-                               .pointcolor("")
-                               .pointstroke("")
-                               .lodvarname("lod")
-                               .xlab("")
-                               .title("#{data.markernames[markerindex]} : #{lod}")
+        mylodchart[panelrow][panelcol] = lodchart().height(hbot)
+                                                   .width(wbot)
+                                                   .margin(margin)
+                                                   .axispos(axispos)
+                                                   .ylim([0.0, scantwo_data.max[lod]])
+                                                   .lightrect(lightrect)
+                                                   .darkrect(darkrect)
+                                                   .linewidth(linewidth)
+                                                   .linecolor(linecolor)
+                                                   .pointsize(0)
+                                                   .pointcolor("")
+                                                   .pointstroke("")
+                                                   .lodvarname("lod")
+                                                   .xlab("")
+                                                   .title("#{data.markernames[markerindex]} : #{lod}")
+                                                   .tipclass(widgetdivid)
 
-        g_scans[panelrow][panelcol] = svg.append("g")
-                                 .attr("id", "scan_#{panelrow+1}_#{panelcol+1}")
-                                 .attr("transform", "translate(#{scans_hpos[panelcol]}, #{scans_vpos[panelrow]})")
-                                 .datum(data)
-                                 .call(mylodchart)
+        g_scans = svg.append("g")
+                     .attr("id", "scan_#{panelrow+1}_#{panelcol+1}")
+                     .attr("transform", "translate(#{scans_hpos[panelcol]}, #{scans_vpos[panelrow]})")
+                     .datum(data)
+                     .call(mylodchart[panelrow][panelcol])
 
     plot_effects = (markerindex1, markerindex2) ->
         mar1 = scantwo_data.labels[markerindex1]
@@ -258,8 +260,10 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                 gn2.push(gnames2[i])
                 cicolors_expanded.push(cicolors[i])
 
-        for i in [0..1]
-            g_eff[i].remove() if g_eff[i]?
+        mydotchart.remove() if mydotchart?
+        mycichart.remove() if mycichart?
+
+        g_eff = [null, null]
 
         pxg_data =
             g:g
@@ -281,6 +285,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                                .yvar("y")
                                .dataByInd(false)
                                .title("#{mar1} : #{mar2}")
+                               .tipclass(widgetdivid)
 
         g_eff[1] = svg.append("g")
                       .attr("id", "eff_1")
@@ -319,6 +324,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                              .ylab("Phenotype")
                              .xcatlabels(gn1)
                              .title("#{mar1} : #{mar2}")
+                             .tipclass(widgetdivid)
 
         g_eff[0] = svg.append("g")
                       .attr("id", "eff_0")

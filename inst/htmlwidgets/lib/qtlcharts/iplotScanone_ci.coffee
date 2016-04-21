@@ -40,6 +40,7 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
     eff_titlepos = chartOpts?.eff_titlepos ? chartOpts?.titlepos ? 20 # position of title for effect plot panel, in pixels
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
+    widgetdivid = d3.select(widgetdiv).attr('id')
 
     wright = width - wleft
 
@@ -64,6 +65,7 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
                            .xlab(lod_xlab)
                            .ylab(lod_ylab)
                            .rotate_ylab(lod_rotate_ylab)
+                           .tipclass(widgetdivid)
 
     svg = d3.select(widgetdiv).select("svg")
 
@@ -72,8 +74,9 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
                .datum(lod_data)
                .call(mylodchart)
 
+    mycichart = null
     plotCI = (markername, markerindex) ->
-        svg.select("g#cichart").remove()
+        mycichart.remove() if mycichart?
 
         g = pxg_data.geno[markerindex]
         gabs = (Math.abs(x) for x in g)
@@ -124,6 +127,7 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
                              .segstrokewidth(eff_linewidth)
                              .segwidth(eff_segwidth)
                              .rectcolor(lightrect)
+                             .tipclass(widgetdivid)
 
         svg.append("g")
            .attr("id", "cichart")
