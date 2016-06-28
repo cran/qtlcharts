@@ -13,6 +13,8 @@
 #'   element must be named using the corresponding option.
 #' @param fillgenoArgs List of named arguments to pass to
 #'   \code{\link[qtl]{fill.geno}}, if needed.
+#' @param digits Round data to this number of significant digits
+#'     before passing to the chart function. (Use NULL to not round.)
 #'
 #' @return An object of class \code{htmlwidget} that will
 #' intelligently print itself into HTML in a variety of contexts
@@ -28,20 +30,27 @@
 #' the input \code{cross} object, using the \code{\link[qtl]{getid}}
 #' function in R/qtl.
 #'
+#' By default, points are colored blue and pink according to whether
+#' the marker genotype is observed or inferred, respectively.
+#'
 #' @keywords hplot
-#' @seealso \code{\link{iplotScanone}}, \code{\link{iplotMap}}
+#' @seealso \code{\link{idotplot}}, \code{\link{iplot}}, \code{\link{iplotScanone}},
+#' \code{\link{iplotMap}}
 #'
 #' @examples
 #' library(qtl)
 #' data(hyper)
 #' marker <- sample(markernames(hyper), 1)
 #' \donttest{
-#' iplotPXG(hyper, marker)}
+#' iplotPXG(hyper, marker)
+#'
+#' # different colors
+#' iplotPXG(hyper, marker, chartOpts=list(pointcolor=c("black", "gray")))}
 #'
 #' @export
 iplotPXG <-
 function(cross, marker, pheno.col=1,
-         chartOpts=NULL, fillgenoArgs=NULL)
+         chartOpts=NULL, fillgenoArgs=NULL, digits=5)
 {
     if(class(cross)[2] != "cross")
         stop('"cross" should have class "cross".')
@@ -51,38 +60,18 @@ function(cross, marker, pheno.col=1,
         warning('marker should have length 1; using "', marker, '"')
     }
 
+    pxg_data <- convert_pxg(qtl::pull.markers(cross, marker), pheno.col, fillgenoArgs=fillgenoArgs)
+
     # use phenotype name as y-axis label, unless ylab is already provided
     # same for title (with marker name)
-    chartOpts <- add2chartOpts(chartOpts, ylab=getPhename(cross, pheno.col),
-                               title=marker)
+    chartOpts <- add2chartOpts(chartOpts, ylab=getPhename(cross, pheno.col), xlab="Genotype",
+                               title=marker, xcategories=seq(along=pxg_data$genonames[[1]]),
+                               xcatlabels=pxg_data$genonames[[1]],
+                               pointcolor=c("slateblue", "#ff851b")) # second color is orange
 
-    x <- list(data=convert_pxg(qtl::pull.markers(cross, marker), pheno.col, fillgenoArgs=fillgenoArgs),
-              chartOpts=chartOpts)
+    pxg_data$geno <- as.numeric(pxg_data$geno)
+    group <- pxg_data$geno < 0 + 1
 
-    defaultAspect <- 1 # width/height
-    browsersize <- getPlotSize(defaultAspect)
-
-    htmlwidgets::createWidget("iplotPXG", x,
-                              width=chartOpts$width,
-                              height=chartOpts$height,
-                              sizingPolicy=htmlwidgets::sizingPolicy(
-                                  browser.defaultWidth=browsersize$width,
-                                  browser.defaultHeight=browsersize$height,
-                                  knitr.defaultWidth=1000,
-                                  knitr.defaultHeight=1000/defaultAspect
-                              ),
-                              package="qtlcharts")
-}
-
-#' @rdname qtlcharts-shiny
-#' @export
-iplotPXG_output <- function(outputId, width="100%", height="530") {
-    htmlwidgets::shinyWidgetOutput(outputId, "iplotPXG", width, height, package="qtlcharts")
-}
-
-#' @rdname qtlcharts-shiny
-#' @export
-iplotPXG_render <- function(expr, env=parent.frame(), quoted=FALSE) {
-    if(!quoted) { expr <- substitute(expr) } # force quoted
-    htmlwidgets::shinyRenderWidget(expr, iplotPXG_output, env, quoted=TRUE)
+    idotplot(abs(pxg_data$geno), pxg_data$pheno, pxg_data$indID, group,
+             chartOpts=chartOpts, digits=digits)
 }

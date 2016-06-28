@@ -14,6 +14,8 @@
 #'   is at position 0.
 #' @param chartOpts A list of options for configuring the chart.  Each
 #'   element must be named using the corresponding option.
+#' @param digits Round data to this number of significant digits
+#'     before passing to the chart function. (Use NULL to not round.)
 #'
 #' @return An object of class \code{htmlwidget} that will
 #' intelligently print itself into HTML in a variety of contexts
@@ -32,19 +34,21 @@
 #'
 #' @export
 iplotMap <-
-function(map, chr, shift=FALSE, chartOpts=NULL)
+function(map, chr=NULL, shift=FALSE, chartOpts=NULL, digits=5)
 {
     if("cross" %in% class(map)) map <- qtl::pull.map(map)
 
-    if(!missing(chr) && !is.null(chr)) {
+    if(!is.null(chr)) {
         map <- map[chr]
         if(length(map) == 0)
             stop("No chromosomes selected")
     }
 
-    if(shift) map <- qtl::shiftmap(map)
     map_list <- convert_map(map)
+    chartOpts <- add2chartOpts(chartOpts, shiftStart=shift)
     x <- list(data=map_list, chartOpts=chartOpts)
+    if(!is.null(digits))
+        attr(x, "TOJSON_ARGS") <- list(digits=digits)
 
     defaultAspect <- 1.5 # width/height
     browsersize <- getPlotSize(defaultAspect)
@@ -59,22 +63,6 @@ function(map, chr, shift=FALSE, chartOpts=NULL)
                                   knitr.defaultHeight=1000/defaultAspect
                               ),
                               package="qtlcharts")
-}
-
-# convert map to special list
-convert_map <-
-function(map) {
-    chrnames <- names(map)
-
-    # remove the A/X classes
-    map <- lapply(map, unclass)
-    # make sure each map is hash with scalars not vectors
-    map <- lapply(map, function(a) lapply(a, jsonlite::unbox))
-
-    mnames <- unlist(lapply(map, names))
-    names(mnames) <- NULL
-
-    list(chr=chrnames, map=map, markernames=mnames)
 }
 
 #' @rdname qtlcharts-shiny

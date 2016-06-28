@@ -4,70 +4,72 @@
 iplotMap = (widgetdiv, data, chartOpts) ->
 
     # chartOpts start
-    width = chartOpts?.width ? 1000 # width of chart in pixels
-    height = chartOpts?.height ? 600 # height of chart in pixels
+    width = chartOpts?.width ? 1000                               # width of chart in pixels
+    height = chartOpts?.height ? 600                              # height of chart in pixels
     margin = chartOpts?.margin ? {left:60, top:40, right:100, bottom: 40, inner:10} # margins in pixels (left, top, right, bottom, inner)
-    axispos = chartOpts?.axispos ? {xtitle:25, ytitle:30, xlabel:5, ylabel:5} # position of axis labels in pixels (xtitle, ytitle, xlabel, ylabel)
-    titlepos = chartOpts?.titlepos ? 20 # position of chart title in pixels
-    ylim = chartOpts?.ylim ? null # y-axis limits
-    nyticks = chartOpts?.nyticks ? 5 # no. ticks on y-axis
-    yticks = chartOpts?.yticks ? null # vector of tick positions on y-axis
-    tickwidth = chartOpts?.tickwidth ? 10 # width of tick marks at markers, in pixels
-    rectcolor = chartOpts?.rectcolor ? "#E6E6E6" # color of background rectangle
-    linecolor = chartOpts?.linecolor ? "slateblue" # color of lines
-    linecolorhilit = chartOpts?.linecolorhilit ? "Orchid" # color of lines, when highlighted
-    linewidth = chartOpts?.linewidth ? 3 # width of lines
-    title = chartOpts?.title ? "" # title for chart
-    xlab = chartOpts?.xlab ? "Chromosome" # x-axis label
-    ylab = chartOpts?.ylab ? "Position (cM)" # y-axis label
+    axispos = chartOpts?.axispos ? {xtitle:25, ytitle:30, xlabel:5, ylabel:5}       # position of axis labels in pixels (xtitle, ytitle, xlabel, ylabel)
+    titlepos = chartOpts?.titlepos ? 20                           # position of chart title in pixels
+    ylim = chartOpts?.ylim ? null                                 # y-axis limits
+    nyticks = chartOpts?.nyticks ? 5                              # no. ticks on y-axis
+    yticks = chartOpts?.yticks ? null                             # vector of tick positions on y-axis
+    xlineOpts = chartOpts?.xlineOpts ? {color:"#cdcdcd", width:5} # color and width of vertical lines
+    tickwidth = chartOpts?.tickwidth ? 10                         # width of tick marks at markers, in pixels
+    rectcolor = chartOpts?.rectcolor ? "#E6E6E6"                  # color of background rectangle
+    linecolor = chartOpts?.linecolor ? "slateblue"                # color of lines
+    linecolorhilit = chartOpts?.linecolorhilit ? "Orchid"         # color of lines, when highlighted
+    linewidth = chartOpts?.linewidth ? 3                          # width of lines
+    title = chartOpts?.title ? ""                                 # title for chart
+    xlab = chartOpts?.xlab ? "Chromosome"                         # x-axis label
+    ylab = chartOpts?.ylab ? "Position (cM)"                      # y-axis label
+    shiftStart = chartOpts?.shiftStart ? false                    # if true, shift the start of chromosomes to 0
+    horizontal = chartOpts?.horizontal ? false                    # if true, have chromosomes on vertical axis and positions horizontally
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
 
-    mychart = mapchart().height(height-margin.top-margin.bottom)
-                        .width(width-margin.left-margin.right)
-                        .margin(margin)
-                        .axispos(axispos)
-                        .titlepos(titlepos)
-                        .ylim(ylim)
-                        .yticks(yticks)
-                        .nyticks(nyticks)
-                        .tickwidth(tickwidth)
-                        .rectcolor(rectcolor)
-                        .linecolor(linecolor)
-                        .linecolorhilit(linecolorhilit)
-                        .linewidth(linewidth)
-                        .title(title)
-                        .xlab(xlab)
-                        .ylab(ylab)
-                        .tipclass(widgetdivid)
+    mychart = d3panels.mapchart({
+                  height:height
+                  width:width
+                  margin:margin
+                  axispos:axispos
+                  titlepos:titlepos
+                  ylim:ylim
+                  yticks:yticks
+                  nyticks:nyticks
+                  xlineOpts:xlineOpts
+                  tickwidth:tickwidth
+                  rectcolor:rectcolor
+                  linecolor:linecolor
+                  linecolorhilit:linecolorhilit
+                  linewidth:linewidth
+                  title:title
+                  xlab:xlab
+                  ylab:ylab
+                  horizontal:horizontal
+                  shiftStart:shiftStart
+                  tipclass:widgetdivid})
 
     # select htmlwidget div and grab its ID
     div = d3.select(widgetdiv)
-
-    svg = div.select("svg")
-                 .datum(data)
-                 .call(mychart)
-
+    mychart(div.select("svg"), data)
+    svg = mychart.svg()
 
     ##############################
     # code for marker search box for iplotMap
     ##############################
 
-    # reorganize map information by marker
-    markerpos = {}
-    for chr in data.chr
-        for marker of data.map[chr]
-            markerpos[marker] = {chr:chr, pos:data.map[chr][marker]}
-
     # create marker tip
     martip = d3.tip()
                .attr('class', "d3-tip #{widgetdivid}")
                .html((d) ->
-                  pos = d3.format(".1f")(markerpos[d].pos)
+                  pos = d3.format(".1f")(data.pos[data.marker.indexOf(d)])
                   "#{d} (#{pos})")
-               .direction('e')
-               .offset([0,10])
+               .direction(() ->
+                   return 'n' if horizontal
+                   'e')
+               .offset(() ->
+                   return [-10,0] if horizontal
+                   [0,10])
     svg.call(martip)
 
     clean_marker_name = (markername) ->
@@ -86,7 +88,7 @@ iplotMap = (widgetdiv, data, chartOpts) ->
             martip.hide()
 
         if newSelection != ""
-            if data.markernames.indexOf(newSelection) >= 0
+            if data.marker.indexOf(newSelection) >= 0
                 selectedMarker = newSelection
                 line = div.select("line##{clean_marker_name(selectedMarker)}")
                           .attr("stroke", linecolorhilit)
@@ -105,7 +107,7 @@ iplotMap = (widgetdiv, data, chartOpts) ->
     $("input#marker_#{widgetdivid}").autocomplete({
         autoFocus: true,
         source: (request, response) ->
-            matches = $.map(data.markernames, (tag) ->
+            matches = $.map(data.marker, (tag) ->
                 tag if tag.toUpperCase().indexOf(request.term.toUpperCase()) is 0)
             response(matches)
         ,
@@ -132,10 +134,11 @@ iplotMap = (widgetdiv, data, chartOpts) ->
 
     # on hover, remove tool tip from marker search
     markerSelect = mychart.markerSelect()
-    markerSelect.on "mouseover", () ->
+    markerSelect.on "mouseover", (d) ->
         unless selectedMarker == ""
-            div.select("line##{clean_marker_name(selectedMarker)}")
-              .attr("stroke", linecolor)
+            unless selectedMarker == d # de-highlight (if hovering over something other than the selected marker)
+                div.select("line##{clean_marker_name(selectedMarker)}")
+                   .attr("stroke", linecolor)
             martip.hide()
 
 add_search_box = (widgetdiv) ->

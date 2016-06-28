@@ -10,21 +10,21 @@
 iboxplot = (widgetdiv, data, chartOpts) ->
 
     # chartOpts start
-    width = chartOpts?.width ? 1000 # width of image in pixels
-    height = chartOpts?.height ? 900 # total height of image in pixels
+    width = chartOpts?.width ? 1000              # width of image in pixels
+    height = chartOpts?.height ? 900             # total height of image in pixels
     margin = chartOpts?.margin ? {left:60, top:20, right:60, bottom: 40} # margins in pixels (left, top, right, bottom)
-    ylab = chartOpts?.ylab ? "Response" # y-axis label
-    xlab = chartOpts?.xlab ? "Individuals" # x-axis label
+    ylab = chartOpts?.ylab ? "Response"          # y-axis label
+    xlab = chartOpts?.xlab ? "Individuals"       # x-axis label
     rectcolor = chartOpts?.rectcolor ? "#E6E6E6" # color of background rectangle
-    qucolors = chartOpts?.qucolors ? null # vector of colors for the quantile curves
+    qucolors = chartOpts?.qucolors ? null        # vector of colors for the quantile curves
     histcolors = chartOpts?.histcolors ? ["#0074D9", "#FF4136", "#3D9970", "MediumVioletRed", "black"] # vector of colors for selected histograms
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
 
     # make sure histcolors and qucolors are arrays
-    histcolors = forceAsArray(histcolors)
-    qucolors = forceAsArray(qucolors)
+    histcolors = d3panels.forceAsArray(histcolors)
+    qucolors = d3panels.forceAsArray(qucolors)
 
     halfheight = height/2
 
@@ -124,7 +124,7 @@ iboxplot = (widgetdiv, data, chartOpts) ->
        .enter()
        .append("text")
        .attr("class", "axis")
-       .text((d) -> formatAxis(LaxisData)(d))
+       .text((d) -> d3panels.formatAxis(LaxisData)(d))
        .attr("x", margin.left*0.9)
        .attr("y", (d) -> yScale(d))
        .attr("dominant-baseline", "middle")
@@ -317,7 +317,7 @@ iboxplot = (widgetdiv, data, chartOpts) ->
             .enter()
             .append("text")
             .attr("class", "axis")
-            .text((d) -> formatAxis(lowBaxisData)(d))
+            .text((d) -> d3panels.formatAxis(lowBaxisData)(d))
             .attr("y", halfheight-margin.bottom*0.75)
             .attr("x", (d) -> lowxScale(d))
             .attr("dominant-baseline", "middle")

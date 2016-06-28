@@ -21,6 +21,8 @@
 #' @param chartOpts A list of options for configuring the chart (see
 #'   the coffeescript code). Each element must be named using the
 #'   corresponding option.
+#' @param digits Round data to this number of significant digits
+#'     before passing to the chart function. (Use NULL to not round.)
 #'
 #' @return An object of class \code{htmlwidget} that will
 #' intelligently print itself into HTML in a variety of contexts
@@ -37,7 +39,7 @@
 #' \code{names(group)}.
 #'
 #' @keywords hplot
-#' @seealso \code{\link{iheatmap}}, \code{\link{iplotCurves}}
+#' @seealso \code{\link{iheatmap}}, \code{\link{scat2scat}}, \code{\link{iplotCurves}}
 #'
 #' @examples
 #' data(geneExpr)
@@ -46,18 +48,26 @@
 #'           chartOpts=list(cortitle="Correlation matrix",
 #'                          scattitle="Scatterplot"))}
 #'
+#' # use Spearman's correlation
+#' corr <- cor(geneExpr$expr, method="spearman", use="pairwise.complete.obs")
+#' # order by hierarchical clustering
+#' o <- hclust(as.dist(1-corr))$order
+#' \donttest{
+#' iplotCorr(geneExpr$expr[,o], geneExpr$genotype, corr=corr[o,o],
+#'           chartOpts=list(cortitle="Spearman correlation",
+#'                          scattitle="Scatterplot"))}
 #' @export
 iplotCorr <-
-function(mat, group, rows, cols, reorder=FALSE, corr=stats::cor(mat, use="pairwise.complete.obs"),
-         scatterplots=TRUE, chartOpts=NULL)
+function(mat, group=NULL, rows=NULL, cols=NULL, reorder=FALSE, corr=NULL,
+         scatterplots=TRUE, chartOpts=NULL, digits=5)
 {
-    if(missing(group) || is.null(group)) group <- rep(1, nrow(mat))
+    if(is.null(group)) group <- rep(1, nrow(mat))
     if(is.data.frame(mat)) mat <- as.matrix(mat)
     stopifnot(length(group) == nrow(mat))
     group <- group2numeric(group)
 
-    if(!missing(corr) && !is.null(corr)) {
-        if(!missing(rows) || !missing(cols)) warning("rows and cols ignored when corr provided.")
+    if(!is.null(corr)) {
+        if(!is.null(rows) || !is.null(cols)) warning("rows and cols ignored when corr provided.")
         if(!missing(reorder)) warning("reorder ignored when corr provided")
         reorder <- FALSE
 
@@ -76,9 +86,10 @@ function(mat, group, rows, cols, reorder=FALSE, corr=stats::cor(mat, use="pairwi
         corr_was_presubset <- TRUE
     }
     else {
-        if(missing(rows) || is.null(rows)) rows <- (1:ncol(mat))
+        corr <- stats::cor(mat, use="pairwise.complete.obs")
+        if(is.null(rows)) rows <- (1:ncol(mat))
         else rows <- selectMatrixColumns(mat, rows)
-        if(missing(cols) || is.null(cols)) cols <- (1:ncol(mat))
+        if(is.null(cols)) cols <- (1:ncol(mat))
         else cols <- selectMatrixColumns(mat, cols)
         corr_was_presubset <- FALSE
     }
@@ -89,7 +100,11 @@ function(mat, group, rows, cols, reorder=FALSE, corr=stats::cor(mat, use="pairwi
     defaultAspect <- 2 # width/height
     browsersize <- getPlotSize(defaultAspect)
 
-    htmlwidgets::createWidget("iplotCorr", list(data=data_list, chartOpts=chartOpts),
+    x <- list(data=data_list, chartOpts=chartOpts)
+    if(!is.null(digits))
+        attr(x, "TOJSON_ARGS") <- list(digits=digits)
+
+    htmlwidgets::createWidget("iplotCorr", x,
                               width=chartOpts$width,
                               height=chartOpts$height,
                               sizingPolicy=htmlwidgets::sizingPolicy(
@@ -112,13 +127,4 @@ iplotCorr_output <- function(outputId, width="100%", height="1000") {
 iplotCorr_render <- function(expr, env=parent.frame(), quoted=FALSE) {
     if(!quoted) { expr <- substitute(expr) } # force quoted
     htmlwidgets::shinyRenderWidget(expr, iplotCorr_output, env, quoted=TRUE)
-}
-
-# ensure that a "group" vector is really the numbers 1, 2, ..., k
-group2numeric <-
-function(group)
-{
-    if(is.factor(group)) return(as.numeric(group))
-
-    match(group, sort(unique(group)))
 }

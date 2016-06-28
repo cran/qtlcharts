@@ -5,7 +5,7 @@
 \title{Interactive phenotype x genotype plot}
 \usage{
 iplotPXG(cross, marker, pheno.col = 1, chartOpts = NULL,
-  fillgenoArgs = NULL)
+  fillgenoArgs = NULL, digits = 5)
 }
 \arguments{
 \item{cross}{Object of class \code{"cross"}, see
@@ -20,6 +20,9 @@ element must be named using the corresponding option.}
 
 \item{fillgenoArgs}{List of named arguments to pass to
 \code{\link[qtl]{fill.geno}}, if needed.}
+
+\item{digits}{Round data to this number of significant digits
+before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
 An object of class \code{htmlwidget} that will
@@ -39,17 +42,24 @@ map.function="c-f")}.
 Individual IDs (viewable when hovering over a point) are taken from
 the input \code{cross} object, using the \code{\link[qtl]{getid}}
 function in R/qtl.
+
+By default, points are colored blue and pink according to whether
+the marker genotype is observed or inferred, respectively.
 }
 \examples{
 library(qtl)
 data(hyper)
 marker <- sample(markernames(hyper), 1)
 \donttest{
-iplotPXG(hyper, marker)}
+iplotPXG(hyper, marker)
+
+# different colors
+iplotPXG(hyper, marker, chartOpts=list(pointcolor=c("black", "gray")))}
 
 }
 \seealso{
-\code{\link{iplotScanone}}, \code{\link{iplotMap}}
+\code{\link{idotplot}}, \code{\link{iplot}}, \code{\link{iplotScanone}},
+\code{\link{iplotMap}}
 }
 \keyword{hplot}
 

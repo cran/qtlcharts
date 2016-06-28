@@ -19,15 +19,15 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
     #                  used as categories for coloring points in the scatterplot
 
     # chartOpts start
-    height = chartOpts?.height ? 560 # height of each panel in pixels
-    width = chartOpts?.width ? 1050 # total width of panels
+    height = chartOpts?.height ? 560             # height of each panel in pixels
+    width = chartOpts?.width ? 1050              # total width of panels
     margin = chartOpts?.margin ? {left:70, top:40, right:5, bottom: 70, inner:5} # margins in pixels (left, top, right, bottom, inner)
-    corcolors = chartOpts?.corcolors ? ["darkslateblue", "white", "crimson"] # heat map colors (same length as `zlim`)
-    zlim = chartOpts?.zlim ? [-1, 0, 1] # z-axis limits
+    corcolors = chartOpts?.corcolors ? ["darkslateblue", "white", "crimson"]     # heat map colors (same length as `zlim`)
+    zlim = chartOpts?.zlim ? [-1, 0, 1]          # z-axis limits
     rectcolor = chartOpts?.rectcolor ? "#E6E6E6" # color of background rectangle
-    cortitle = chartOpts?.cortitle ? "" # title for heatmap panel
-    scattitle = chartOpts?.scattitle ? "" # title for scatterplot panel
-    scatcolors = chartOpts?.scatcolors ? null # vector of point colors for scatterplot
+    cortitle = chartOpts?.cortitle ? ""          # title for heatmap panel
+    scattitle = chartOpts?.scattitle ? ""        # title for scatterplot panel
+    scatcolors = chartOpts?.scatcolors ? null    # vector of point colors for scatterplot
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
 
@@ -121,7 +121,7 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
 
     # colors for scatterplot
     nGroup = d3.max(data.group)
-    scatcolors = expand2vector(scatcolors) # make sure it's an array (or null)
+    scatcolors = d3panels.expand2vector(scatcolors) # make sure it's an array (or null)
     if !(scatcolors?) or scatcolors.length < nGroup
         if nGroup == 1
             scatcolors = [ "#969696" ]
@@ -181,7 +181,7 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
                    .enter()
                    .append("text")
                    .attr("class", "axes")
-                   .text((d) -> formatAxis(xticks)(d))
+                   .text((d) -> d3panels.formatAxis(xticks)(d))
                    .attr("x", (d) -> xScale(d))
                    .attr("y", panelheight+margin.bottom*0.3)
                    .attr("dominant-baseline", "middle")
@@ -191,7 +191,7 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
                    .enter()
                    .append("text")
                    .attr("class", "axes")
-                   .text((d) -> formatAxis(yticks)(d))
+                   .text((d) -> d3panels.formatAxis(yticks)(d))
                    .attr("x", -margin.left*0.1)
                    .attr("y", (d) -> yScale(d))
                    .attr("dominant-baseline", "middle")

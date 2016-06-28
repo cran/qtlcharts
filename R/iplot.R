@@ -11,6 +11,8 @@
 #' @param indID Optional vector of character strings, shown with tool tips
 #' @param chartOpts A list of options for configuring the chart.  Each
 #'   element must be named using the corresponding option.
+#' @param digits Round data to this number of significant digits
+#'     before passing to the chart function. (Use NULL to not round.)
 #'
 #' @return An object of class \code{htmlwidget} that will
 #' intelligently print itself into HTML in a variety of contexts
@@ -18,7 +20,8 @@
 #' Shiny output bindings.
 #'
 #' @keywords hplot
-#' @seealso \code{\link{iplotCorr}}, \code{\link{iplotCurves}}
+#' @seealso \code{\link{iplotCorr}}, \code{\link{iplotCurves}}, \code{\link{itriplot}},
+#' \code{\link{idotplot}}, \code{\link{iplotPXG}}
 #'
 #' @examples
 #' x <- rnorm(100)
@@ -29,15 +32,15 @@
 #'
 #' @export
 iplot <-
-function(x, y, group, indID, chartOpts=NULL)
+function(x, y, group=NULL, indID=NULL, chartOpts=NULL, digits=5)
 {
     if(length(x) != length(y))
         stop("length(x) != length(y)")
-    if(missing(group) || is.null(group))
+    if(is.null(group))
         group <- rep(1, length(x))
     else if(length(group) != length(x))
         stop("length(group) != length(x)")
-    if(missing(indID) || is.null(indID))
+    if(is.null(indID))
         indID <- get_indID(length(x), names(x), names(y), names(group))
     if(length(indID) != length(x))
         stop("length(indID) != length(x)")
@@ -47,6 +50,8 @@ function(x, y, group, indID, chartOpts=NULL)
 
     x <- list(data = data.frame(x=x, y=y, group=group, indID=indID),
               chartOpts=chartOpts)
+    if(!is.null(digits))
+        attr(x, "TOJSON_ARGS") <- list(digits=digits)
 
     defaultAspect <- 1.33 # width/height
     browsersize <- getPlotSize(defaultAspect)

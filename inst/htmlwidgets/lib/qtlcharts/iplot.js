@@ -13,15 +13,15 @@ iplot = function(widgetdiv, data, chartOpts) {
     bottom: 40,
     inner: 5
   };
-  xlab = (ref4 = chartOpts != null ? chartOpts.xlab : void 0) != null ? ref4 : "X";
-  ylab = (ref5 = chartOpts != null ? chartOpts.ylab : void 0) != null ? ref5 : "Y";
-  axispos = (ref6 = chartOpts != null ? chartOpts.axispos : void 0) != null ? ref6 : {
+  axispos = (ref4 = chartOpts != null ? chartOpts.axispos : void 0) != null ? ref4 : {
     xtitle: 25,
     ytitle: 30,
     xlabel: 5,
     ylabel: 5
   };
-  titlepos = (ref7 = chartOpts != null ? chartOpts.titlepos : void 0) != null ? ref7 : 20;
+  titlepos = (ref5 = chartOpts != null ? chartOpts.titlepos : void 0) != null ? ref5 : 20;
+  xlab = (ref6 = chartOpts != null ? chartOpts.xlab : void 0) != null ? ref6 : "X";
+  ylab = (ref7 = chartOpts != null ? chartOpts.ylab : void 0) != null ? ref7 : "Y";
   xlim = (ref8 = chartOpts != null ? chartOpts.xlim : void 0) != null ? ref8 : null;
   xticks = (ref9 = chartOpts != null ? chartOpts.xticks : void 0) != null ? ref9 : null;
   nxticks = (ref10 = chartOpts != null ? chartOpts.nxticks : void 0) != null ? ref10 : 5;
@@ -47,17 +47,47 @@ iplot = function(widgetdiv, data, chartOpts) {
   };
   chartdivid = (ref21 = chartOpts != null ? chartOpts.chartdivid : void 0) != null ? ref21 : 'chart';
   widgetdivid = d3.select(widgetdiv).attr('id');
-  mychart = scatterplot().height(height - margin.top - margin.bottom).width(width - margin.left - margin.right).margin(margin).axispos(axispos).titlepos(titlepos).xlab(xlab).ylab(ylab).title(title).ylim(ylim).xlim(xlim).xticks(xticks).nxticks(nxticks).yticks(yticks).nyticks(nyticks).rectcolor(rectcolor).pointcolor(pointcolor).pointsize(pointsize).pointstroke(pointstroke).rotate_ylab(rotate_ylab).xNA(xNA).yNA(yNA).xvar('x').yvar('y').dataByInd(false).tipclass(widgetdivid);
-  d3.select(widgetdiv).select("svg").datum({
-    data: {
-      x: data.x,
-      y: data.y
+  mychart = d3panels.scatterplot({
+    height: height,
+    width: width,
+    margin: margin,
+    axispos: axispos,
+    titlepos: titlepos,
+    xlab: xlab,
+    ylab: ylab,
+    title: title,
+    ylim: ylim,
+    xlim: xlim,
+    xticks: xticks,
+    nxticks: nxticks,
+    yticks: yticks,
+    nyticks: nyticks,
+    rectcolor: rectcolor,
+    pointcolor: pointcolor,
+    pointsize: pointsize,
+    pointstroke: pointstroke,
+    rotate_ylab: rotate_ylab,
+    xNA: {
+      handle: xNA.handle,
+      force: xNA.force
     },
-    group: data.group,
-    indID: data.indID
-  }).call(mychart);
-  return mychart.pointsSelect().on("mouseover", function(d) {
-    return d3.select(this).attr("r", pointsize * 2);
+    xNA_size: {
+      width: xNA.width,
+      gap: xNA.gap
+    },
+    yNA: {
+      handle: yNA.handle,
+      force: yNA.force
+    },
+    yNA_size: {
+      width: yNA.width,
+      gap: yNA.gap
+    },
+    tipclass: widgetdivid
+  });
+  mychart(d3.select(widgetdiv).select("svg"), data);
+  return mychart.points().on("mouseover", function(d) {
+    return d3.select(this).attr("r", pointsize * 2).moveToFront();
   }).on("mouseout", function(d) {
     return d3.select(this).attr("r", pointsize);
   });

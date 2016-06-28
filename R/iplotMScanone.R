@@ -30,6 +30,8 @@
 #' @param chartOpts A list of options for configuring the chart (see
 #'   the coffeescript code). Each element must be named using the
 #'   corresponding option.
+#' @param digits Round data to this number of significant digits
+#'     before passing to the chart function. (Use NULL to not round.)
 #'
 #' @return An object of class \code{htmlwidget} that will
 #' intelligently print itself into HTML in a variety of contexts
@@ -75,20 +77,20 @@
 #'
 #' @export
 iplotMScanone <-
-function(scanoneOutput, cross, lodcolumn, pheno.col, times=NULL,
-         effects, chr, chartOpts=NULL)
+function(scanoneOutput, cross=NULL, lodcolumn=NULL, pheno.col=NULL, times=NULL,
+         effects=NULL, chr=NULL, chartOpts=NULL, digits=5)
 {
     if(!any(class(scanoneOutput) == "scanone"))
         stop('"scanoneOutput" should have class "scanone".')
 
-    if(!missing(chr) && !is.null(chr)) {
+    if(!is.null(chr)) {
         rn <- rownames(scanoneOutput)
         scanoneOutput <- subset(scanoneOutput, chr=chr)
-        if(!missing(effects) && !is.null(effects)) effects <- effects[match(rownames(scanoneOutput), rn)]
-        if(!missing(cross) && !is.null(cross)) cross <- subset(cross, chr=chr)
+        if(!is.null(effects)) effects <- effects[match(rownames(scanoneOutput), rn)]
+        if(!is.null(cross)) cross <- subset(cross, chr=chr)
     }
 
-    if(missing(lodcolumn) || is.null(lodcolumn)) lodcolumn <- 1:(ncol(scanoneOutput)-2)
+    if(is.null(lodcolumn)) lodcolumn <- 1:(ncol(scanoneOutput)-2)
     stopifnot(all(lodcolumn >= 1 & lodcolumn <= ncol(scanoneOutput)-2))
     scanoneOutput <- scanoneOutput[,c(1,2,lodcolumn+2),drop=FALSE]
 
@@ -108,14 +110,14 @@ function(scanoneOutput, cross, lodcolumn, pheno.col, times=NULL,
     }
     if(is.null(times)) times <- NULL
 
-    if(missing(pheno.col) || is.null(pheno.col)) pheno.col <- seq(along=lodcolumn)
+    if(is.null(pheno.col)) pheno.col <- seq(along=lodcolumn)
 
-    if((missing(cross) || is.null(cross)) && (missing(effects) || is.null(effects))) { # no effects
+    if(is.null(cross) && is.null(effects)) { # no effects
         show_effects <- FALSE
         effects_list <- NULL
     }
     else {
-        if(missing(effects) || is.null(effects)) {
+        if(is.null(effects)) {
             stopifnot(length(pheno.col) == length(lodcolumn))
             stopifnot(class(cross)[2] == "cross")
 
@@ -134,17 +136,18 @@ function(scanoneOutput, cross, lodcolumn, pheno.col, times=NULL,
         show_effects <- TRUE
     }
 
-    scanone_list <- convert_scanone(scanoneOutput)
+    scanone_list <- convert_scanone(scanoneOutput, lod_as_matrix=TRUE)
 
     defaultAspect <- 1.5 # width/height
     browsersize <- getPlotSize(defaultAspect)
 
-    htmlwidgets::createWidget("iplotMScanone",
-                              list(lod_data=scanone_list,
-                                   eff_data=effects_list,
-                                   times=times,
-                                   show_effects=show_effects,
-                                   chartOpts=chartOpts),
+    x <- list(lod_data=scanone_list, eff_data=effects_list,
+              times=times, show_effects=show_effects,
+              chartOpts=chartOpts)
+    if(!is.null(digits))
+        attr(x, "TOJSON_ARGS") <- list(digits=digits)
+
+    htmlwidgets::createWidget("iplotMScanone", x,
                               width=chartOpts$width,
                               height=chartOpts$height,
                               sizingPolicy=htmlwidgets::sizingPolicy(

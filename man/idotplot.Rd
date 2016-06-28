@@ -4,17 +4,22 @@
 \alias{idotplot}
 \title{Interactive phenotype x genotype plot}
 \usage{
-idotplot(group, y, indID, chartOpts = NULL)
+idotplot(x, y, indID = NULL, group = NULL, chartOpts = NULL, digits = 5)
 }
 \arguments{
-\item{group}{Vector of groups of individuals (e.g., a genotype)}
+\item{x}{Vector of groups of individuals (e.g., a genotype)}
 
 \item{y}{Numeric vector (e.g., a phenotype)}
 
 \item{indID}{Optional vector of character strings, shown with tool tips}
 
+\item{group}{Optional vector of categories for coloring points}
+
 \item{chartOpts}{A list of options for configuring the chart.  Each
 element must be named using the corresponding option.}
+
+\item{digits}{Round data to this number of significant digits
+before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
 An object of class \code{htmlwidget} that will

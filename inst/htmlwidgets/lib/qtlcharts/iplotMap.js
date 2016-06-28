@@ -2,7 +2,7 @@
 var add_search_box, iplotMap;
 
 iplotMap = function(widgetdiv, data, chartOpts) {
-  var axispos, chartdivid, chr, clean_marker_name, div, height, i, len, linecolor, linecolorhilit, linewidth, margin, marker, markerSelect, markerpos, martip, mychart, nyticks, rectcolor, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selectedMarker, svg, tickwidth, title, titlepos, widgetdivid, width, xlab, ylab, ylim, yticks;
+  var axispos, chartdivid, clean_marker_name, div, height, horizontal, linecolor, linecolorhilit, linewidth, margin, markerSelect, martip, mychart, nyticks, rectcolor, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref15, ref16, ref17, ref18, ref19, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selectedMarker, shiftStart, svg, tickwidth, title, titlepos, widgetdivid, width, xlab, xlineOpts, ylab, ylim, yticks;
   width = (ref = chartOpts != null ? chartOpts.width : void 0) != null ? ref : 1000;
   height = (ref1 = chartOpts != null ? chartOpts.height : void 0) != null ? ref1 : 600;
   margin = (ref2 = chartOpts != null ? chartOpts.margin : void 0) != null ? ref2 : {
@@ -22,35 +22,62 @@ iplotMap = function(widgetdiv, data, chartOpts) {
   ylim = (ref5 = chartOpts != null ? chartOpts.ylim : void 0) != null ? ref5 : null;
   nyticks = (ref6 = chartOpts != null ? chartOpts.nyticks : void 0) != null ? ref6 : 5;
   yticks = (ref7 = chartOpts != null ? chartOpts.yticks : void 0) != null ? ref7 : null;
-  tickwidth = (ref8 = chartOpts != null ? chartOpts.tickwidth : void 0) != null ? ref8 : 10;
-  rectcolor = (ref9 = chartOpts != null ? chartOpts.rectcolor : void 0) != null ? ref9 : "#E6E6E6";
-  linecolor = (ref10 = chartOpts != null ? chartOpts.linecolor : void 0) != null ? ref10 : "slateblue";
-  linecolorhilit = (ref11 = chartOpts != null ? chartOpts.linecolorhilit : void 0) != null ? ref11 : "Orchid";
-  linewidth = (ref12 = chartOpts != null ? chartOpts.linewidth : void 0) != null ? ref12 : 3;
-  title = (ref13 = chartOpts != null ? chartOpts.title : void 0) != null ? ref13 : "";
-  xlab = (ref14 = chartOpts != null ? chartOpts.xlab : void 0) != null ? ref14 : "Chromosome";
-  ylab = (ref15 = chartOpts != null ? chartOpts.ylab : void 0) != null ? ref15 : "Position (cM)";
-  chartdivid = (ref16 = chartOpts != null ? chartOpts.chartdivid : void 0) != null ? ref16 : 'chart';
+  xlineOpts = (ref8 = chartOpts != null ? chartOpts.xlineOpts : void 0) != null ? ref8 : {
+    color: "#cdcdcd",
+    width: 5
+  };
+  tickwidth = (ref9 = chartOpts != null ? chartOpts.tickwidth : void 0) != null ? ref9 : 10;
+  rectcolor = (ref10 = chartOpts != null ? chartOpts.rectcolor : void 0) != null ? ref10 : "#E6E6E6";
+  linecolor = (ref11 = chartOpts != null ? chartOpts.linecolor : void 0) != null ? ref11 : "slateblue";
+  linecolorhilit = (ref12 = chartOpts != null ? chartOpts.linecolorhilit : void 0) != null ? ref12 : "Orchid";
+  linewidth = (ref13 = chartOpts != null ? chartOpts.linewidth : void 0) != null ? ref13 : 3;
+  title = (ref14 = chartOpts != null ? chartOpts.title : void 0) != null ? ref14 : "";
+  xlab = (ref15 = chartOpts != null ? chartOpts.xlab : void 0) != null ? ref15 : "Chromosome";
+  ylab = (ref16 = chartOpts != null ? chartOpts.ylab : void 0) != null ? ref16 : "Position (cM)";
+  shiftStart = (ref17 = chartOpts != null ? chartOpts.shiftStart : void 0) != null ? ref17 : false;
+  horizontal = (ref18 = chartOpts != null ? chartOpts.horizontal : void 0) != null ? ref18 : false;
+  chartdivid = (ref19 = chartOpts != null ? chartOpts.chartdivid : void 0) != null ? ref19 : 'chart';
   widgetdivid = d3.select(widgetdiv).attr('id');
-  mychart = mapchart().height(height - margin.top - margin.bottom).width(width - margin.left - margin.right).margin(margin).axispos(axispos).titlepos(titlepos).ylim(ylim).yticks(yticks).nyticks(nyticks).tickwidth(tickwidth).rectcolor(rectcolor).linecolor(linecolor).linecolorhilit(linecolorhilit).linewidth(linewidth).title(title).xlab(xlab).ylab(ylab).tipclass(widgetdivid);
+  mychart = d3panels.mapchart({
+    height: height,
+    width: width,
+    margin: margin,
+    axispos: axispos,
+    titlepos: titlepos,
+    ylim: ylim,
+    yticks: yticks,
+    nyticks: nyticks,
+    xlineOpts: xlineOpts,
+    tickwidth: tickwidth,
+    rectcolor: rectcolor,
+    linecolor: linecolor,
+    linecolorhilit: linecolorhilit,
+    linewidth: linewidth,
+    title: title,
+    xlab: xlab,
+    ylab: ylab,
+    horizontal: horizontal,
+    shiftStart: shiftStart,
+    tipclass: widgetdivid
+  });
   div = d3.select(widgetdiv);
-  svg = div.select("svg").datum(data).call(mychart);
-  markerpos = {};
-  ref17 = data.chr;
-  for (i = 0, len = ref17.length; i < len; i++) {
-    chr = ref17[i];
-    for (marker in data.map[chr]) {
-      markerpos[marker] = {
-        chr: chr,
-        pos: data.map[chr][marker]
-      };
-    }
-  }
+  mychart(div.select("svg"), data);
+  svg = mychart.svg();
   martip = d3.tip().attr('class', "d3-tip " + widgetdivid).html(function(d) {
     var pos;
-    pos = d3.format(".1f")(markerpos[d].pos);
+    pos = d3.format(".1f")(data.pos[data.marker.indexOf(d)]);
     return d + " (" + pos + ")";
-  }).direction('e').offset([0, 10]);
+  }).direction(function() {
+    if (horizontal) {
+      return 'n';
+    }
+    return 'e';
+  }).offset(function() {
+    if (horizontal) {
+      return [-10, 0];
+    }
+    return [0, 10];
+  });
   svg.call(martip);
   clean_marker_name = function(markername) {
     return markername.replace(".", "\\.").replace("#", "\\#").replace("/", "\\/");
@@ -65,7 +92,7 @@ iplotMap = function(widgetdiv, data, chartOpts) {
       martip.hide();
     }
     if (newSelection !== "") {
-      if (data.markernames.indexOf(newSelection) >= 0) {
+      if (data.marker.indexOf(newSelection) >= 0) {
         selectedMarker = newSelection;
         line = div.select("line#" + (clean_marker_name(selectedMarker))).attr("stroke", linecolorhilit);
         martip.show(line.datum(), line.node());
@@ -81,7 +108,7 @@ iplotMap = function(widgetdiv, data, chartOpts) {
     autoFocus: true,
     source: function(request, response) {
       var matches;
-      matches = $.map(data.markernames, function(tag) {
+      matches = $.map(data.marker, function(tag) {
         if (tag.toUpperCase().indexOf(request.term.toUpperCase()) === 0) {
           return tag;
         }
@@ -108,9 +135,11 @@ iplotMap = function(widgetdiv, data, chartOpts) {
     });
   });
   markerSelect = mychart.markerSelect();
-  return markerSelect.on("mouseover", function() {
+  return markerSelect.on("mouseover", function(d) {
     if (selectedMarker !== "") {
-      div.select("line#" + (clean_marker_name(selectedMarker))).attr("stroke", linecolor);
+      if (selectedMarker !== d) {
+        div.select("line#" + (clean_marker_name(selectedMarker))).attr("stroke", linecolor);
+      }
       return martip.hide();
     }
   });

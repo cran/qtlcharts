@@ -4,7 +4,7 @@
 \alias{iplot}
 \title{Interactive scatterplot}
 \usage{
-iplot(x, y, group, indID, chartOpts = NULL)
+iplot(x, y, group = NULL, indID = NULL, chartOpts = NULL, digits = 5)
 }
 \arguments{
 \item{x}{Numeric vector of x values}
@@ -17,6 +17,9 @@ iplot(x, y, group, indID, chartOpts = NULL)
 
 \item{chartOpts}{A list of options for configuring the chart.  Each
 element must be named using the corresponding option.}
+
+\item{digits}{Round data to this number of significant digits
+before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
 An object of class \code{htmlwidget} that will
@@ -36,7 +39,8 @@ iplot(x, y, grp)}
 
 }
 \seealso{
-\code{\link{iplotCorr}}, \code{\link{iplotCurves}}
+\code{\link{iplotCorr}}, \code{\link{iplotCurves}}, \code{\link{itriplot}},
+\code{\link{idotplot}}, \code{\link{iplotPXG}}
 }
 \keyword{hplot}
 

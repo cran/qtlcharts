@@ -4,8 +4,8 @@
 \alias{iplotCurves}
 \title{Plot of a bunch of curves, linked to points in scatterplots}
 \usage{
-iplotCurves(curveMatrix, times, scatter1 = NULL, scatter2 = NULL,
-  group = NULL, chartOpts = NULL)
+iplotCurves(curveMatrix, times = NULL, scatter1 = NULL, scatter2 = NULL,
+  group = NULL, chartOpts = NULL, digits = 5)
 }
 \arguments{
 \item{curveMatrix}{Matrix (dim n_ind x n_times) with outcomes}
@@ -24,6 +24,9 @@ scatterplot}
 \item{chartOpts}{A list of options for configuring the chart (see
 the coffeescript code). Each element must be named using the
 corresponding option.}
+
+\item{digits}{Round data to this number of significant digits
+before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
 An object of class \code{htmlwidget} that will
@@ -59,7 +62,7 @@ iplotCurves(y, times, y[,c(1,5)], y[,c(5,16)],
 
 }
 \seealso{
-\code{\link{iplotCorr}}
+\code{\link{iplotCorr}}, \code{\link{iplot}}, \code{\link{scat2scat}}
 }
 \keyword{hplot}
 

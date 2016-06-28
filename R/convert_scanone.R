@@ -10,6 +10,7 @@
 #
 # @param output An object of class \code{"scanone"}, as output by
 #   \code{\link[qtl]{scanone}}.
+# @param lod_as_matrix If TRUE, keep lod scores as a matrix; if FALSE, make a vector
 #
 # @return A list with the data reformatted
 #
@@ -22,21 +23,38 @@
 # out <- scanone(hyper)
 # out_as_list <- convert_scanone(out)
 convert_scanone <-
-function(output)
+function(output, lod_as_matrix=TRUE)
 {
     # marker names: replace pseudomarkers with blanks
     mnames <- rownames(output)
     pmarkers <- grep("^c.+\\.loc-*[0-9]+", mnames)
     mnames[pmarkers] <- ""
 
+    # chromosome IDs factor -> character
+    output[,1] <- as.character(output[,1])
+
     # chromosome names
-    chrnames <- as.character(unique(output[,1]))
+    chrnames <- unique(output[,1])
+
+    # lod scores
+    if(lod_as_matrix) {
+        lod <- as.matrix(output[,-(1:2)])
+        dimnames(lod) <- NULL
+    }
+    else {
+        lod <- output[,3]
+        names(lod) <- NULL
+    }
 
     # lod column names
     lodnames <- names(output)[-(1:2)]
     if(length(lodnames) != length(unique(lodnames)))
         warning("lod column names are not unique")
 
-    c(list(chrnames = chrnames, lodnames=lodnames),
-      as.list(output), list(markernames = mnames))
+    list(chr=as.character(output[,1]),
+         pos=output[,2],
+         lod=lod,
+         marker=mnames,
+         chrname=chrnames,
+         lodname=lodnames)
 }

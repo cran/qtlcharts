@@ -18,6 +18,8 @@
 #' @param chartOpts A list of options for configuring the chart (see
 #'   the coffeescript code). Each element must be named using the
 #'   corresponding option.
+#' @param digits Round data to this number of significant digits
+#'     before passing to the chart function. (Use NULL to not round.)
 #'
 #' @return An object of class \code{htmlwidget} that will
 #' intelligently print itself into HTML in a variety of contexts
@@ -25,7 +27,7 @@
 #' Shiny output bindings.
 #'
 #' @keywords hplot
-#' @seealso \code{\link{iplotCorr}}
+#' @seealso \code{\link{iplotCorr}}, \code{\link{iplot}}, \code{\link{scat2scat}}
 #'
 #' @examples
 #' # random growth curves, based on some data
@@ -50,12 +52,12 @@
 #'
 #' @export
 iplotCurves <-
-function(curveMatrix, times, scatter1=NULL, scatter2=NULL, group=NULL,
-         chartOpts=NULL)
+function(curveMatrix, times=NULL, scatter1=NULL, scatter2=NULL, group=NULL,
+         chartOpts=NULL, digits=5)
 {
     n.ind <- nrow(curveMatrix)
     n.times <- ncol(curveMatrix)
-    if(missing(times) || is.null(times)) times <- 1:ncol(curveMatrix)
+    if(is.null(times)) times <- 1:ncol(curveMatrix)
     if(length(times) != n.times)
         stop("length(times) != ncol(curveMatrix)")
     if(!is.null(scatter1) && nrow(scatter1) != n.ind)
@@ -66,7 +68,7 @@ function(curveMatrix, times, scatter1=NULL, scatter2=NULL, group=NULL,
         scatter1 <- scatter2
         scatter2 <- NULL
     }
-    if(missing(group) || is.null(group)) group <- rep(1, n.ind)
+    if(is.null(group)) group <- rep(1, n.ind)
     stopifnot(length(group) == n.ind)
     group <- group2numeric(group)
     indID <- rownames(curveMatrix)
@@ -75,16 +77,25 @@ function(curveMatrix, times, scatter1=NULL, scatter2=NULL, group=NULL,
     if(is.data.frame(scatter1)) scatter1 <- as.matrix(scatter1)
     if(is.data.frame(scatter2)) scatter2 <- as.matrix(scatter2)
     dimnames(curveMatrix) <- dimnames(scatter1) <- dimnames(scatter2) <- names(group) <- names(times) <- NULL
+    if(!is.null(scatter1) && ncol(scatter1) < 2)
+        stop("scatter1 should have two columns")
+    if(!is.null(scatter2) && ncol(scatter2) < 2)
+        stop("scatter2 should have two columns")
 
-
-    data_list <- list(curve_data=convert_curves(times, curveMatrix, group, indID),
-                      scatter1_data=convert_scat(scatter1, group, indID),
-                      scatter2_data=convert_scat(scatter2, group, indID))
+    data_list <- list(curve_data=list(x=list(times), y=curveMatrix, group=group, indID=indID))
+    if(!is.null(scatter1))
+        data_list$scatter1_data <- list(x=scatter1[,1], y=scatter1[,2], group=group, indID=indID)
+    if(!is.null(scatter2))
+        data_list$scatter2_data <- list(x=scatter2[,1], y=scatter2[,2], group=group, indID=indID)
 
     defaultAspect <- 1.25 # width/height
     browsersize <- getPlotSize(defaultAspect)
 
-    htmlwidgets::createWidget("iplotCurves", list(data=data_list, chartOpts=chartOpts),
+    x <- list(data=data_list, chartOpts=chartOpts)
+    if(!is.null(digits))
+        attr(x, "TOJSON_ARGS") <- list(digits=digits)
+
+    htmlwidgets::createWidget("iplotCurves", x,
                               width=chartOpts$width,
                               height=chartOpts$height,
                               sizingPolicy=htmlwidgets::sizingPolicy(
@@ -107,19 +118,4 @@ iplotCurves_output <- function(outputId, width="100%", height="1000") {
 iplotCurves_render <- function(expr, env=parent.frame(), quoted=FALSE) {
     if(!quoted) { expr <- substitute(expr) } # force quoted
     htmlwidgets::shinyRenderWidget(expr, iplotCurves_output, env, quoted=TRUE)
-}
-
-
-convert_curves <-
-function(times, curvedata, group, indID)
-{
-    list(x=times, data=curvedata, group=group, indID=indID)
-}
-
-convert_scat <-
-function(scatdata, group, indID)
-{
-    if(is.null(scatdata)) return(NULL)
-
-    list(data=scatdata, group=group, indID=indID)
 }

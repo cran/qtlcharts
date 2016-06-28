@@ -4,8 +4,8 @@
 \alias{iplotCorr}
 \title{Image of correlation matrix with linked scatterplot}
 \usage{
-iplotCorr(mat, group, rows, cols, reorder = FALSE, corr = stats::cor(mat,
-  use = "pairwise.complete.obs"), scatterplots = TRUE, chartOpts = NULL)
+iplotCorr(mat, group = NULL, rows = NULL, cols = NULL, reorder = FALSE,
+  corr = NULL, scatterplots = TRUE, chartOpts = NULL, digits = 5)
 }
 \arguments{
 \item{mat}{Data matrix (individuals x variables)}
@@ -30,6 +30,9 @@ linked to scatterplots.}
 \item{chartOpts}{A list of options for configuring the chart (see
 the coffeescript code). Each element must be named using the
 corresponding option.}
+
+\item{digits}{Round data to this number of significant digits
+before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
 An object of class \code{htmlwidget} that will
@@ -58,9 +61,17 @@ iplotCorr(geneExpr$expr, geneExpr$genotype, reorder=TRUE,
           chartOpts=list(cortitle="Correlation matrix",
                          scattitle="Scatterplot"))}
 
+# use Spearman's correlation
+corr <- cor(geneExpr$expr, method="spearman", use="pairwise.complete.obs")
+# order by hierarchical clustering
+o <- hclust(as.dist(1-corr))$order
+\donttest{
+iplotCorr(geneExpr$expr[,o], geneExpr$genotype, corr=corr[o,o],
+          chartOpts=list(cortitle="Spearman correlation",
+                         scattitle="Scatterplot"))}
 }
 \seealso{
-\code{\link{iheatmap}}, \code{\link{iplotCurves}}
+\code{\link{iheatmap}}, \code{\link{scat2scat}}, \code{\link{iplotCurves}}
 }
 \keyword{hplot}
 

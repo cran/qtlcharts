@@ -1,9 +1,9 @@
-# iplotPXG: (just barely) interactive plot of phenotype vs genotype
+# itriplot: interactive plot of trinomial probabilities
 # Karl W Broman
 
 HTMLWidgets.widget({
 
-    name: "iplotPXG",
+    name: "itriplot",
     type: "output",
 
     initialize: (widgetdiv, width, height) ->
@@ -28,7 +28,7 @@ HTMLWidgets.widget({
         svg.attr("width", chartOpts.width)
         svg.attr("height", chartOpts.height)
 
-        iplotPXG(widgetdiv, x.data, chartOpts)
+        itriplot(widgetdiv, x.data, chartOpts)
 
     resize: (widgetdiv, width, height) ->
         d3.select(widgetdiv).select("svg")

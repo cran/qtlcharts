@@ -20,6 +20,8 @@
 #'   (TRUE/FALSE) vector may also be used.
 #' @param chartOpts A list of options for configuring the chart.  Each
 #'   element must be named using the corresponding option.
+#' @param digits Round data to this number of significant digits
+#'     before passing to the chart function. (Use NULL to not round.)
 #'
 #' @return An object of class \code{htmlwidget} that will
 #' intelligently print itself into HTML in a variety of contexts
@@ -52,15 +54,15 @@
 #'
 #' @export
 iplotScantwo <-
-function(scantwoOutput, cross, lodcolumn=1, pheno.col=1, chr,
-         chartOpts=NULL)
+function(scantwoOutput, cross=NULL, lodcolumn=1, pheno.col=1, chr=NULL,
+         chartOpts=NULL, digits=5)
 {
     if(!any(class(scantwoOutput) == "scantwo"))
         stop('"scantwoOutput" should have class "scantwo".')
 
-    if(!missing(chr) && !is.null(chr)) {
+    if(!is.null(chr)) {
         scantwoOutput <- subset(scantwoOutput, chr=chr)
-        if(!missing(cross) && !is.null(cross)) cross <- subset(cross, chr=chr)
+        if(!is.null(cross)) cross <- subset(cross, chr=chr)
     }
 
     if(length(lodcolumn) > 1) {
@@ -84,7 +86,7 @@ function(scantwoOutput, cross, lodcolumn=1, pheno.col=1, chr,
         pheno.col <- pheno.col[1]
         warning("pheno.col should have length 1; using first value")
     }
-    if(!missing(cross) && !is.null(cross))
+    if(!is.null(cross))
         pheno <- qtl::pull.pheno(cross, pheno.col)
     else cross <- pheno <- NULL
 
@@ -94,10 +96,13 @@ function(scantwoOutput, cross, lodcolumn=1, pheno.col=1, chr,
     defaultAspect <- 1 # width/height
     browsersize <- getPlotSize(defaultAspect)
 
-    htmlwidgets::createWidget("iplotScantwo",
-                              list(scantwo_data=scantwo_list,
-                                   phenogeno_data=phenogeno_list,
-                                   chartOpts=chartOpts),
+    x <- list(scantwo_data=scantwo_list,
+              phenogeno_data=phenogeno_list,
+              chartOpts=chartOpts)
+    if(!is.null(digits))
+        attr(x, "TOJSON_ARGS") <- list(digits=digits)
+
+    htmlwidgets::createWidget("iplotScantwo", x,
                               width=chartOpts$width,
                               height=chartOpts$height,
                               sizingPolicy=htmlwidgets::sizingPolicy(
@@ -144,8 +149,8 @@ data4iplotScantwo <-
     dimnames(lod) <- NULL
     dimnames(lodv1) <- NULL
     list(lod=lod, lodv1=lodv1,
-         nmar=n.mar, chrnames=chrnam,
-         labels=labels, chr=chr, pos=map$pos)
+         nmar=n.mar, chrname=chrnam,
+         marker=labels, chr=chr, pos=map$pos)
 }
 
 
@@ -199,10 +204,10 @@ get_lodv1 <-
 
 # convert genotype/phenotype information to JSON format
 cross4iplotScantwo <-
-    function(scantwoOutput, cross, pheno)
+    function(scantwoOutput, cross=NULL, pheno=NULL)
 {
     # if no cross or phenotype, just return null
-    if(missing(cross) || is.null(cross) || missing(pheno) || is.null(pheno))
+    if(is.null(cross) || is.null(pheno))
         return(NULL)
 
     # pull out locations of LOD calculations, on grid
@@ -260,7 +265,7 @@ cross4iplotScantwo <-
     cross.attr <- attributes(cross)
     if(crosstype %in% c("f2", "bc", "bcsft") && any(chrtype=="X")) {
         for(i in which(chrtype=="X")) {
-            cross$geno[[i]]$draws <- qtl::reviseXdata(crosstype, "full", sexpgm,
+            cross$geno[[i]]$draws <- qtl::reviseXdata(crosstype, "standard", sexpgm,
                                                       draws=cross$geno[[i]]$draws,
                                                       cross.attr=cross.attr)
         }
@@ -281,7 +286,7 @@ cross4iplotScantwo <-
     names(genonames) <- names(cross$geno)
     for(i in seq(along=genonames))
         genonames[[i]] <- qtl::getgenonames(crosstype, class(cross$geno[[i]]),
-                                            "full", sexpgm, cross.attr)
+                                            "standard", sexpgm, cross.attr)
 
     # chr for each marker
     chr <- as.character(map$chr)
