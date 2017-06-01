@@ -40,6 +40,10 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
     yticks_pxg = chartOpts?.yticks_pxg ? null          # vector of tick positions on y-axis in dot chart of phenotype x genotype
     # chartOpts end
 
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:50, right:10, bottom: 40, inner: 5})
+    axispos = d3panels.check_listarg_v_default(axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
+
     # htmlwidget div element containing the chart, and its ID
     div = d3.select(widgetdiv)
     widgetdivid = div.attr("id")
@@ -62,6 +66,9 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
     # selected LODs on left and right
     leftvalue = "int"
     rightvalue = "fv1"
+
+    # keep track of chromosome heatmap selections
+    cur_chr1 = cur_chr2 = ''
 
     # cicolors: check they're the right length or construct them
     if pheno_and_geno?
@@ -121,6 +128,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                  .attr("name", "refresh")
                  .text("Refresh")
                  .on "click", () ->
+                     cur_chr1 = cur_chr2 = ''
                      leftsel = document.getElementById("leftselect_#{widgetdivid}")
                      leftvalue = leftsel.options[leftsel.selectedIndex].value
                      rightsel = document.getElementById("rightselect_#{widgetdivid}")
@@ -257,60 +265,137 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
         g2 = pheno_and_geno.geno[mar2]
         chr1 = pheno_and_geno.chr[mar1]
         chr2 = pheno_and_geno.chr[mar2]
-        gnames1 = pheno_and_geno.genonames[chr1]
-        gnames2 = pheno_and_geno.genonames[chr2]
-        ng1 = gnames1.length
-        ng2 = gnames2.length
+        chrtype1 = pheno_and_geno.chrtype[chr1]
+        chrtype2 = pheno_and_geno.chrtype[chr2]
 
-        g = (g1[i] + (g2[i]-1)*ng1 for i of g1)
+        g = []
         gn1 = []
         gn2 = []
         cicolors_expanded = []
-        for i in [0...ng2]
-            for j in [0...ng1]
-                gn1.push(gnames1[j])
-                gn2.push(gnames2[i])
-                cicolors_expanded.push(cicolors[i])
 
-        mydotchart.remove() if mydotchart?
-        mycichart.remove() if mycichart?
+        # need to deal separately with X chr
+        # [this mess is because if females are AA/AB/BB and males AY/BY
+        #  we want to just show 3x3 + 2x2 = 13 possible two-locus genotypes,
+        #  not all (3+2)x(3+2) = 25]
+        if chr1 == chr2 and chrtype1=="X" and pheno_and_geno.X_geno_by_sex?
+            fgnames = pheno_and_geno.X_geno_by_sex[0]
+            mgnames = pheno_and_geno.X_geno_by_sex[1]
+            ngf = fgnames.length
+            ngm = mgnames.length
+            tmp = [0...(ngf+ngm)]
+            m = ((-1 for i of tmp) for j of tmp)
+            k = 0
+            for i in [0...ngf]
+                for j in [0...ngf]
+                    gn1.push(fgnames[j])
+                    gn2.push(fgnames[i])
+                    cicolors_expanded.push(cicolors[i])
+                    m[i][j] = k
+                    k++
+            for i in [0...ngm]
+                for j in [0...ngm]
+                    gn1.push(mgnames[j])
+                    gn2.push(mgnames[i])
+                    cicolors_expanded.push(cicolors[i])
+                    m[i+ngf][j+ngf] = k
+                    k++
+            g = (m[g1[i]-1][g2[i]-1]+1 for i of g1)
+        else
+            gnames1 = pheno_and_geno.genonames[chr1]
+            gnames2 = pheno_and_geno.genonames[chr2]
+            ng1 = gnames1.length
+            ng2 = gnames2.length
+
+            g = (g1[i] + (g2[i]-1)*ng1 for i of g1)
+            for i in [0...ng2]
+                for j in [0...ng1]
+                    gn1.push(gnames1[j])
+                    gn2.push(gnames2[i])
+                    cicolors_expanded.push(cicolors[i])
 
         pxg_data =
             x:g
             y:pheno_and_geno.pheno
             indID:pheno_and_geno.indID
 
-        mydotchart = d3panels.dotchart({
-            height:hright
-            width:wright
-            margin:margin
-            axispos:axispos
-            rectcolor:rectcolor
-            boxcolor:boxcolor
-            boxwidth:boxwidth
-            pointsize:pointsize
-            pointstroke:pointstroke
-            xcategories:[1..gn1.length]
-            xcatlabels:gn1
-            xlab:""
-            ylab:ylab_eff
-            nyticks:nyticks_pxg
-            yticks:yticks_pxg
-            dataByInd:false
-            title:"#{mar1} : #{mar2}"
-            titlepos:titlepos
-            tipclass:widgetdivid})
+        # remove the CI chart no matter what
+        mycichart.remove() if mycichart?
 
-        unless g_eff[1]? # only create it once
-            g_eff[1] = svg.append("g")
-                          .attr("id", "eff_1")
-                          .attr("transform", "translate(#{eff_hpos[1]}, #{eff_vpos[1]})")
-        mydotchart(g_eff[1], pxg_data)
+        if cur_chr1 != chr1 or cur_chr2 != chr2
+            mydotchart.remove() if mydotchart?
 
-        # revise point colors
-        mydotchart.points()
-                  .attr("fill", (d,i) ->
-                          cicolors_expanded[g[i]-1])
+            mydotchart = d3panels.dotchart({
+                height:hright
+                width:wright
+                margin:margin
+                axispos:axispos
+                rectcolor:rectcolor
+                boxcolor:boxcolor
+                boxwidth:boxwidth
+                pointsize:pointsize
+                pointstroke:pointstroke
+                xcategories:[1..gn1.length]
+                xcatlabels:gn1
+                xlab:""
+                ylab:ylab_eff
+                nyticks:nyticks_pxg
+                yticks:yticks_pxg
+                dataByInd:false
+                title:"#{mar1} : #{mar2}"
+                titlepos:titlepos
+                tipclass:widgetdivid})
+
+            unless g_eff[1]? # only create it once
+                g_eff[1] = svg.append("g")
+                              .attr("id", "eff_1")
+                              .attr("transform", "translate(#{eff_hpos[1]}, #{eff_vpos[1]})")
+            mydotchart(g_eff[1], pxg_data)
+
+            # revise point colors
+            mydotchart.points()
+                      .attr("fill", (d,i) ->
+                              cicolors_expanded[g[i]-1])
+
+        else # same chr pair as before: animate points
+            # remove marker text
+            d3.select("#markerlab1").remove()
+            d3.select("#xaxislab1").remove()
+
+            # grab scale and get info to take inverse
+            xscale = mydotchart.xscale()
+            pos1 = xscale(1)
+            dpos = xscale(2) - xscale(1)
+            point_jitter = (d) ->
+                u = (d - pos1)/dpos
+                u - Math.round(u)
+
+            # move points to new x-axis position
+            points = mydotchart.points()
+                      .transition().duration(1000)
+                      .attr("cx", (d,i) ->
+                          cx = d3.select(this).attr("cx")
+                          u = point_jitter(cx)
+                          xscale(g[i] + u))
+                      .attr("fill", (d,i) -> cicolors_expanded[g[i]-1])
+
+            # use force to move them apart again
+            scaledPoints = []
+            points.each((d,i) -> scaledPoints.push({
+                x: +d3.select(this).attr("cx")
+                y: +d3.select(this).attr("cy")
+                fy: +d3.select(this).attr("cy")
+                truex: xscale(g[i])}))
+
+            force = d3.forceSimulation(scaledPoints)
+                      .force("x", d3.forceX((d) -> d.truex))
+                      .force("collide", d3.forceCollide(pointsize*1.1))
+                      .stop()
+            [0..30].map((d) ->
+                force.tick()
+                points.attr("cx", (d,i) -> scaledPoints[i].x))
+
+        cur_chr1 = chr1
+        cur_chr2 = chr2
 
         cis = d3panels.ci_by_group(g, pheno_and_geno.pheno, 2)
         ci_data =
@@ -346,12 +431,12 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                           .attr("id", "eff_0")
                           .attr("transform", "translate(#{eff_hpos[0]}, #{eff_vpos[0]})")
         mycichart(g_eff[0], ci_data)
-        effcharts = [mydotchart, mycichart]
+        effcharts = [mycichart, mydotchart]
 
         # add second row of labels
         for p in [0..1]
             effcharts[p].svg() # second row of genotypes
-                    .append("g").attr("class", "x axis")
+                    .append("g").attr("class", "x axis").attr("id", "xaxislab#{p}")
                     .selectAll("empty")
                     .data(gn2)
                     .enter()
@@ -360,7 +445,7 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                     .attr("y", hright-margin.bottom/2+axispos.xlabel)
                     .text((d) -> d)
             effcharts[p].svg() # marker name labels
-                    .append("g").attr("class", "x axis")
+                    .append("g").attr("class", "x axis").attr("id", "markerlab#{p}")
                     .selectAll("empty")
                     .data([mar1, mar2])
                     .enter()
@@ -370,6 +455,11 @@ iplotScantwo = (widgetdiv, scantwo_data, pheno_and_geno, chartOpts) ->
                         hright - margin.bottom/(i+1) + axispos.xlabel)
                     .style("text-anchor", "end")
                     .text((d) -> d + ":")
+
+    if chartOpts.caption?
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)
 
 # add full,add,int,av1,fv1 lod scores to scantwo_data
 add_symmetric_lod = (scantwo_data) ->

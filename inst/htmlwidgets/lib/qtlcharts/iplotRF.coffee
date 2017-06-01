@@ -37,6 +37,10 @@ iplotRF = (widgetdiv, rf_data, geno, chartOpts) ->
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
 
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:40, right:40, bottom: 60})
+    axispos = d3panels.check_listarg_v_default(axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
+
     # force things to be vectors
     rf_data.chrname = d3panels.forceAsArray(rf_data.chrname)
     rf_data.nmar = d3panels.forceAsArray(rf_data.nmar)
@@ -232,3 +236,8 @@ iplotRF = (widgetdiv, rf_data, geno, chartOpts) ->
                          mylodchart[1].remove() if mylodchart[1]?
                          mylodchart[1] = null
                      create_crosstab(rf_data.marker[d.yindex], rf_data.marker[d.xindex])
+
+    if chartOpts.caption?
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)

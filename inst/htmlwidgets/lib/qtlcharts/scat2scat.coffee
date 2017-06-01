@@ -6,7 +6,7 @@ scat2scat = (widgetdiv, scat1data, scat2data, chartOpts) ->
     # chartOpts start
     height = chartOpts?.height ? 500                 # height of chart in pixels
     width = chartOpts?.width ? 800                   # width of chart in pixels
-    title1 = chartOpts?.title1 ? ""                  # title for left panel
+    title1 = chartOpts?.title1 ? chartOpts?.title ? ""  # title for left panel
     margin = chartOpts?.margin ? {left:60, top:40, right:40, bottom: 40, inner:5} # margins in pixels (left, top, right, bottom, inner)
     axispos = chartOpts?.axispos ? {xtitle:25, ytitle:30, xlabel:5, ylabel:5}     # position of axis labels in pixels (xtitle, ytitle, xlabel, ylabel)
     titlepos = chartOpts?.titlepos ? 20              # position of chart title in pixels
@@ -40,6 +40,12 @@ scat2scat = (widgetdiv, scat1data, scat2data, chartOpts) ->
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
+
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:40, right:40, bottom: 40, inner:5})
+    axispos = d3panels.check_listarg_v_default(axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
+    xNA = d3panels.check_listarg_v_default(xNA, {handle:true, force:false, width:15, gap:10})
+    yNA = d3panels.check_listarg_v_default(yNA, {handle:true, force:false, width:15, gap:10})
 
     leftchart = d3panels.scatterplot({
         height:height
@@ -115,3 +121,8 @@ scat2scat = (widgetdiv, scat1data, scat2data, chartOpts) ->
             tipclass:widgetdivid})
 
         rightchart(g_right, scat2data[index])
+
+    if chartOpts?.caption
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)

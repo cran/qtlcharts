@@ -28,8 +28,12 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
     cortitle = chartOpts?.cortitle ? ""          # title for heatmap panel
     scattitle = chartOpts?.scattitle ? ""        # title for scatterplot panel
     scatcolors = chartOpts?.scatcolors ? null    # vector of point colors for scatterplot
+    pointsize = chartOpts?.pointsize ? 3         # size of points in scatterplot
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
+
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:70, top:40, right:5, bottom: 70, inner:5})
 
     panelheight = height - margin.top - margin.bottom
     panelwidth = (width - 2*margin.left - 2*margin.right)/2
@@ -57,9 +61,9 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
     ncorrX = data.cols.length
     ncorrY = data.rows.length
 
-    corXscale = d3.scale.ordinal().domain(d3.range(ncorrX)).rangeBands([0, panelwidth])
-    corYscale = d3.scale.ordinal().domain(d3.range(ncorrY)).rangeBands([panelheight, 0])
-    corZscale = d3.scale.linear().domain(zlim).range(corcolors)
+    corXscale = d3.scaleBand().domain(d3.range(ncorrX)).range([0, panelwidth])
+    corYscale = d3.scaleBand().domain(d3.range(ncorrY)).range([panelheight, 0])
+    corZscale = d3.scaleLinear().domain(zlim).range(corcolors)
     pixel_width = corXscale(1)-corXscale(0)
     pixel_height = corYscale(0)-corYscale(1)
 
@@ -93,8 +97,8 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
                .attr("class", "cell")
                .attr("x", (d) -> corXscale(d.col))
                .attr("y", (d) -> corYscale(d.row))
-               .attr("width", corXscale.rangeBand())
-               .attr("height", corYscale.rangeBand())
+               .attr("width", Math.abs(corXscale(0) - corXscale(1)))
+               .attr("height", Math.abs(corYscale(0) - corYscale(1)))
                .attr("fill", (d) -> corZscale(d.value))
                .attr("stroke", "none")
                .attr("stroke-width", 2)
@@ -131,10 +135,10 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
             scatcolors = ["MediumVioletRed", "MediumSeaGreen", "slateblue"]
         else
             if nGroup <= 10
-                colorScale = d3.scale.category10()
+                colorScale = d3.schemeCategory10
             else
-                colorScale = d3.scale.category20()
-            scatcolors = (colorScale(i) for i of d3.range(nGroup))
+                colorScale = d3.schemeCategory20
+            scatcolors = (colorScale[i] for i of d3.range(nGroup))
 
     scat_tip = d3.tip()
                 .attr('class', "d3-tip #{widgetdivid}")
@@ -147,10 +151,10 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
         d3.selectAll("circle.points").remove()
         d3.selectAll("text.axes").remove()
         d3.selectAll("line.axes").remove()
-        xScale = d3.scale.linear()
+        xScale = d3.scaleLinear()
                          .domain(d3.extent(data.dat[data.cols[i]]))
                          .range([margin.inner, panelwidth-margin.inner])
-        yScale = d3.scale.linear()
+        yScale = d3.scaleLinear()
                          .domain(d3.extent(data.dat[data.rows[j]]))
                          .range([panelheight-margin.inner, margin.inner])
         # axis labels
@@ -229,7 +233,7 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
                    .attr("r", (d) ->
                          x = data.dat[data.cols[i]][d]
                          y = data.dat[data.rows[j]][d]
-                         if x? and y? then 3 else null)
+                         if x? and y? then pointsize else null)
                    .attr("stroke", "black")
                    .attr("stroke-width", 1)
                    .attr("fill", (d) -> scatcolors[data.group[d]-1])
@@ -270,5 +274,7 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
                .attr("dominant-baseline", "middle")
                .attr("text-anchor", "middle")
 
-    d3.select("div#caption")
-      .style("opacity", 1)
+    if chartOpts.caption?
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)

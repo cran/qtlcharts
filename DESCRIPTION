@@ -1,6 +1,6 @@
 Package: qtlcharts
-Version: 0.7-8
-Date: 2016-06-28
+Version: 0.9-6
+Date: 2017-05-24
 Title: Interactive Graphics for QTL Experiments
 Author: Karl W Broman [aut, cre], Michael Bostock [ctb, cph] (d3.js library
     in htmlwidgets/lib, http://d3js.org), Justin Palmer [ctb, cph] (d3.tip library
@@ -24,7 +24,7 @@ Suggests: htmltools, jsonlite, knitr, devtools, roxygen2, rmarkdown,
 License: GPL-3 | file LICENSE
 URL: http://kbroman.org/qtlcharts
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Authors@R: c(
     person("Karl W", "Broman", role=c("aut", "cre"), email="kbroman@biostat.wisc.edu"),
     person("Michael", "Bostock", role=c("ctb", "cph"),
@@ -44,6 +44,6 @@ Authors@R: c(
     person("jQuery UI contributors", role = "ctb",
            comment = "jQuery UI library in htmlwidgets/lib; see http://jqueryui.com/about"))
 NeedsCompilation: no
-Packaged: 2016-06-28 13:28:09 UTC; kbroman
+Packaged: 2017-06-01 13:36:18 UTC; kbroman
 Repository: CRAN
-Date/Publication: 2016-06-28 23:43:10
+Date/Publication: 2017-06-01 13:59:58 UTC

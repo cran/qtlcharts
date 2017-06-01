@@ -58,6 +58,14 @@ iplotCurves = (widgetdiv, curve_data, scatter1_data, scatter2_data, chartOpts) -
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
 
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:40, right:40, bottom: 40, inner:5})
+    axispos = d3panels.check_listarg_v_default(axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
+    scat1_xNA = d3panels.check_listarg_v_default(scat1_xNA, {handle:true, force:false, width:15, gap:10})
+    scan1_yNA = d3panels.check_listarg_v_default(scat1_yNA, {handle:true, force:false, width:15, gap:10})
+    scat2_xNA = d3panels.check_listarg_v_default(scat2_xNA, {handle:true, force:false, width:15, gap:10})
+    scan2_yNA = d3panels.check_listarg_v_default(scat2_yNA, {handle:true, force:false, width:15, gap:10})
+
     # number of scatterplots
     nscatter = (scatter1_data?) + (scatter2_data?)
 
@@ -185,11 +193,11 @@ iplotCurves = (widgetdiv, curve_data, scatter1_data, scatter2_data, chartOpts) -
     linecolorhilit = d3panels.expand2vector(linecolorhilit, ngroup)
 
     curves.on "mouseover", (d,i) ->
-                             d3.select(this).attr("stroke", linecolorhilit[group[i]]).moveToFront()
+                             d3.select(this).attr("stroke", linecolorhilit[group[i]]).raise()
                              d3.selectAll("circle.pt#{i}").attr("r", pointsizehilit) if nscatter > 0
                              d3.selectAll("circle.pt#{i}").attr("fill", pointcolorhilit[group[i]]) if nscatter > 0
           .on "mouseout", (d,i) ->
-                             d3.select(this).attr("stroke", linecolor[group[i]]).moveToBack()
+                             d3.select(this).attr("stroke", linecolor[group[i]]).lower()
                              d3.selectAll("circle.pt#{i}").attr("r", pointsize) if nscatter > 0
                              d3.selectAll("circle.pt#{i}").attr("fill", pointcolor[group[i]]) if nscatter > 0
 
@@ -199,8 +207,12 @@ iplotCurves = (widgetdiv, curve_data, scatter1_data, scatter2_data, chartOpts) -
             points.on "mouseover", (d,i) ->
                                        d3.selectAll("circle.pt#{i}").attr("r", pointsizehilit)
                                        d3.selectAll("circle.pt#{i}").attr("fill", pointcolorhilit[group[i]])
-                                       d3.select("path.path#{i}").attr("stroke", linecolorhilit[group[i]]).moveToFront()
+                                       d3.select("path.path#{i}").attr("stroke", linecolorhilit[group[i]]).raise()
                   .on "mouseout", (d,i) ->
                                        d3.selectAll("circle.pt#{i}").attr("r", pointsize)
                                        d3.selectAll("circle.pt#{i}").attr("fill", pointcolor[group[i]])
-                                       d3.select("path.path#{i}").attr("stroke", linecolor[group[i]]).moveToBack()
+                                       d3.select("path.path#{i}").attr("stroke", linecolor[group[i]]).lower()
+    if chartOpts.caption?
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)

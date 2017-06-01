@@ -1,3 +1,42 @@
+## qtlcharts 0.9-6 (2017-05-24)
+
+- All charts now can take a `caption` within `chartOpts` which will
+  show up as text below the figure. This is intended for stand-alone
+  html files.
+
+
+## qtlcharts 0.9-5 (2017-05-19)
+
+- Added new tool for exploring pleiotropy between two traits,
+  `ipleiotropy()`.
+
+- Fixed X chromosome case in iplotScantwo, so that only relevant
+  two-locus genotypes are shown.
+
+- Added new chart option `pointsize` for `iplotCorr`.
+
+- In the coffeescript functions, ensure that list arguments like
+  `margin` have all of the necessary components. This avoid the
+  problem of everything being messed up if for example `margin` is
+  specified within defining `margin.inner`.
+
+- `lodcharts` now includes a quantitative scale for position on the
+  x-axis in the case of a single chromosome
+
+- In `iplotScanone` and `iplotScantwo`, in phenotype x genotype plots
+  when switching between markers on the same chromosome, animate the
+  movement of the points rather than destroying and re-creating the
+  panel.
+
+
+## qtlcharts 0.8-2 (2017-05-11)
+
+- Updated to use [D3](https://d3js.org)
+  [version 4](https://github.com/d3/d3/blob/master/API.md).
+
+- Also updated d3panels, d3-tip, jquery, and jquery-ui.
+
+
 ## qtlcharts 0.7-8 (2016-06-28)
 
 - Rewrite underlying javascript to use new version of

@@ -20,7 +20,7 @@ iplotMScanone_eff = (widgetdiv, lod_data, eff_data, times, chartOpts) ->
     colors = chartOpts?.colors ? ["slateblue", "white", "crimson"] # heat map colors
     zlim = chartOpts?.zlim ? null                                  # z-axis limits
     zthresh = chartOpts?.zthresh ? null                            # lower z-axis threshold for display in heat map
-    xlab = chartOpts?.xlab ? "Chromosome"                          # x-axis label for LOD heatmap (also used in lower panel)
+    xlab = chartOpts?.xlab ? null                                  # x-axis label for LOD heatmap (also used in lower panel)
     ylab = chartOpts?.ylab ? ""                                    # y-axis label for LOD heatmap (also used as x-axis label on effect plot)
     zlab = chartOpts?.zlab ? "LOD score"                           # z-axis label for LOD heatmap (really the y-axis label in the lower panel)
     eff_ylim = chartOpts?.eff_ylim ? null                          # y-axis limits for effect plot (right panel)
@@ -38,6 +38,10 @@ iplotMScanone_eff = (widgetdiv, lod_data, eff_data, times, chartOpts) ->
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
+
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:40, right:40, bottom: 40, inner:5})
+    axispos = d3panels.check_listarg_v_default(axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
 
     wright = width - wleft
     hbot = height - htop
@@ -227,3 +231,8 @@ iplotMScanone_eff = (widgetdiv, lod_data, eff_data, times, chartOpts) ->
                          g_verpanel.select("g.title text").text("")
                          verpanel_axis_text.text("") unless times?
                          effect_text.remove() if effect_text?
+
+    if chartOpts.caption?
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)

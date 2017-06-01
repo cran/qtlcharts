@@ -24,7 +24,7 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
     lod_pointsize = chartOpts?.lod_pointsize ? 0               # size of points at markers (default = 0 corresponding to no visible points at markers)
     lod_pointstroke = chartOpts?.lod_pointstroke ? "black"     # color of outer circle for points at markers in LOD curve panel
     lod_title = chartOpts?.lod_title ? ""                      # title of LOD curve panel
-    lod_xlab = chartOpts?.lod_xlab ? "Chromosome"              # x-axis label for LOD curve panel
+    lod_xlab = chartOpts?.lod_xlab ? null                      # x-axis label for LOD curve panel
     lod_ylab = chartOpts?.lod_ylab ? "LOD score"               # y-axis label for LOD curve panel
     lod_rotate_ylab = chartOpts?.lod_rotate_ylab ? null        # indicates whether to rotate the y-axis label 90 degrees, in LOD curve panel
     eff_ylim = chartOpts?.eff_ylim ? null                      # y-axis limits in effect plot panel
@@ -41,6 +41,11 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
+
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:40, right:40, bottom: 40, inner:5})
+    lod_axispos = d3panels.check_listarg_v_default(lod_axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
+    eff_axispos = d3panels.check_listarg_v_default(eff_axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
 
     wright = width - wleft
 
@@ -86,6 +91,8 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
 
         means = []
         se = []
+        low = []
+        high = []
         for j in [1..genonames.length]
             phesub = (p for p,i in pxg_data.pheno when gabs[i] == j and p?)
 
@@ -97,11 +104,12 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
             if phesub.length>1
                 variance = (phesub.reduce (a,b) -> a+Math.pow(b-ave, 2))/(phesub.length-1)
                 se.push((Math.sqrt(variance/phesub.length)))
+                low.push(means[j-1] - 2*se[j-1])
+                high.push(means[j-1] + 2*se[j-1])
             else
                 se.push(null)
-
-        low = (means[i]-2*se[i] for i of means)
-        high = (means[i]+2*se[i] for i of means)
+                low.push(null)
+                high.push(null)
 
         range = [d3.min(low), d3.max(high)]
         if eff_ylim?
@@ -139,3 +147,8 @@ iplotScanone_ci = (widgetdiv, lod_data, pxg_data, chartOpts) ->
     mylodchart.markerSelect()
               .on "click", (d,i) ->
                     plotCI(markers[i], i)
+
+    if chartOpts.caption?
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)

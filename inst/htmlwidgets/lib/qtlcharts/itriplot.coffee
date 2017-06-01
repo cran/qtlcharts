@@ -22,6 +22,9 @@ itriplot = (widgetdiv, data, chartOpts) ->
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
 
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:40, right:60, bottom: 10})
+
     mychart = d3panels.trichart({
         height:height
         width:width
@@ -46,3 +49,8 @@ itriplot = (widgetdiv, data, chartOpts) ->
                     d3.select(this).attr("r", pointsize*2)
            .on "mouseout", (d) ->
                     d3.select(this).attr("r", pointsize)
+
+    if chartOpts?.caption
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)

@@ -21,12 +21,16 @@ iplotScanone_noeff = (widgetdiv, data, chartOpts) ->
     pointsize = chartOpts?.pointsize ? chartOpts?.lod_pointsize ? 0               # size of points at markers (default = 0 corresponding to no visible points at markers)
     pointstroke = chartOpts?.pointstroke ? chartOpts?.lod_pointstroke ? "black"   # color of outer circle for points at markers
     title = chartOpts?.title ? chartOpts?.lod_title ? ""        # title of chart
-    xlab = chartOpts?.xlab ? chartOpts?.lod_xlab ? "Chromosome" # x-axis label
+    xlab = chartOpts?.xlab ? chartOpts?.lod_xlab ? null         # x-axis label
     ylab = chartOpts?.ylab ? chartOpts?.lod_ylab ? "LOD score"  # y-axis label
     rotate_ylab = chartOpts?.rotate_ylab ? chartOpts?.lod_rotate_ylab ? null      # indicates whether to rotate the y-axis label 90 degrees
     # chartOpts end
     chartdivid = chartOpts?.chartdivid ? 'chart'
     widgetdivid = d3.select(widgetdiv).attr('id')
+
+    # make sure list args have all necessary bits
+    margin = d3panels.check_listarg_v_default(margin, {left:60, top:40, right:40, bottom: 40, inner:5})
+    axispos = d3panels.check_listarg_v_default(axispos, {xtitle:25, ytitle:30, xlabel:5, ylabel:5})
 
     mylodchart = d3panels.lodchart({
         height:height
@@ -60,3 +64,8 @@ iplotScanone_noeff = (widgetdiv, data, chartOpts) ->
                     d3.select(this)
                       .transition().duration(500).attr("r", r*3)
                       .transition().duration(500).attr("r", r)
+
+    if chartOpts.caption?
+        d3.select(widgetdiv).insert("p")
+                            .attr("class", "caption")
+                            .text(chartOpts.caption)
