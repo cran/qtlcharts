@@ -83,7 +83,7 @@ iplotMap = (widgetdiv, data, chartOpts) ->
 
     # grab selected marker from the search box
     selectedMarker = ""
-    $("div#markerinput_#{widgetdivid}").submit () ->
+    $("div#markerinput_#{widgetdivid}").submit (event) ->
         newSelection = document.getElementById("marker_#{widgetdivid}").value
         event.preventDefault()
         unless selectedMarker == ""
@@ -117,7 +117,7 @@ iplotMap = (widgetdiv, data, chartOpts) ->
         ,
         select: (event, ui) ->
             $("input#marker_#{widgetdivid}").val(ui.item.label)
-            $("input#submit_#{widgetdivid}").submit()})
+            $("input#submit_#{widgetdivid}").submit(event)})
 
 
     # grayed out "Marker name"
@@ -145,10 +145,23 @@ iplotMap = (widgetdiv, data, chartOpts) ->
                    .attr("stroke", linecolor)
             martip.hide()
 
+    if chartOpts.heading?
+        d3.select("div#htmlwidget_container")
+          .insert("h2", ":first-child")
+          .html(chartOpts.heading)
+          .style("font-family", "sans-serif")
+
     if chartOpts.caption?
-        d3.select(widgetdiv).insert("p")
-                            .attr("class", "caption")
-                            .text(chartOpts.caption)
+        d3.select("body")
+          .append("p")
+          .attr("class", "caption")
+          .html(chartOpts.caption)
+
+    if chartOpts.footer?
+        d3.select("body")
+          .append("div")
+          .html(chartOpts.footer)
+          .style("font-family", "sans-serif")
 
 add_search_box = (widgetdiv) ->
     div = d3.select(widgetdiv)

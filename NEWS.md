@@ -1,3 +1,37 @@
+## qtlcharts 0.11-6 (2019-02-04)
+
+- Fix bug in `idotplot()` so that it works with a single group.
+
+- Fix bug in `iplotMap()` so that the drop-down menu works in Firefox.
+
+
+## qtlcharts 0.11-4 (2018-03-08)
+
+- Update to use CoffeeScript v 2.2.2. Using
+  [babel](https://babeljs.io) to compile to ES5.
+
+- Switch from [bower](https://bower.io) to
+  [yarn](https://yarnpkg.com/en/) for javascript dependency
+  management.
+
+- Revise `scat2scat()` so that the chart options `xlab2` and `ylab2`
+  can be vectors of length of `scat2data`, so that each dataset can
+  have different x- and y-axis labels. Default is to take them from
+  the column names of the datasets in `scat2data`.
+
+
+## qtlcharts 0.10-1 (2017-06-01)
+
+- All charts can now take a `heading` and a `footer` within
+  `chartOpts`. The former will make an `<h2>` heading above the
+  figure; the latter will make a `<div>` at the bottom. These are
+  intended for stand-alone html files.
+
+- In the `caption` chart option, now using `.html()` rather than
+  `.text()` so that you can insert a bit of html (such as `<b>` or
+  `<code>`).
+
+
 ## qtlcharts 0.9-6 (2017-05-24)
 
 - All charts now can take a `caption` within `chartOpts` which will

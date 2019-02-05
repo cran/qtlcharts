@@ -65,7 +65,20 @@ iplotScanone_noeff = (widgetdiv, data, chartOpts) ->
                       .transition().duration(500).attr("r", r*3)
                       .transition().duration(500).attr("r", r)
 
+    if chartOpts.heading?
+        d3.select("div#htmlwidget_container")
+          .insert("h2", ":first-child")
+          .html(chartOpts.heading)
+          .style("font-family", "sans-serif")
+
     if chartOpts.caption?
-        d3.select(widgetdiv).insert("p")
-                            .attr("class", "caption")
-                            .text(chartOpts.caption)
+        d3.select("body")
+          .append("p")
+          .attr("class", "caption")
+          .html(chartOpts.caption)
+
+    if chartOpts.footer?
+        d3.select("body")
+          .append("div")
+          .html(chartOpts.footer)
+          .style("font-family", "sans-serif")
