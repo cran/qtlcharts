@@ -9,7 +9,7 @@
 #'
 #' @usage data(grav)
 #'
-#' @format An object of class \code{"cross"}; see \code{\link[qtl]{read.cross}}.
+#' @format An object of class `"cross"`; see [qtl::read.cross()].
 #'
 #' @keywords datasets
 #'
@@ -17,9 +17,9 @@
 #' Spalding EP (2013) High-throughput computer vision introduces the
 #' time axis to a quantitative trait map of a plant growth
 #' response. Genetics 195:1077-1086
-#' (\href{https://www.ncbi.nlm.nih.gov/pubmed/23979570}{PubMed})
+#' ([PubMed](https://pubmed.ncbi.nlm.nih.gov/23979570/))
 #'
-#' @source \href{https://phenome.jax.org/projects/Moore1b}{Mouse Phenome Database}
+#' @source Mouse Phenome Database, <https://phenome.jax.org/projects/Moore1b>
 #'
 #' @examples
 #' data(grav)

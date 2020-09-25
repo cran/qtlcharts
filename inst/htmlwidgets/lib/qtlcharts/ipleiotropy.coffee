@@ -33,6 +33,7 @@ ipleiotropy = (widgetdiv, lod_data, pxg_data, chartOpts) ->
     scat_rotate_ylab = chartOpts?.scat_rotate_ylab ? null               # indicates whether to rotate the y-axis label 90 degrees, in scatterplot
     scat_axispos = chartOpts?.scat_axispos ? chartOpts?.axispos ? {xtitle:25, ytitle:30, xlabel:5, ylabel:5} # position of axis labels in pixels (xtitle, ytitle, xlabel, ylabel) in LOD curve panel
     scat_titlepos = chartOpts?.scat_titlepos ? chartOpts?.titlepos ? 20 # position of title for scatterplot, in pixels
+    scat_title = chartOpts?.scat_title ? ""                               # title of scatterplot panel
     slider_height = chartOpts?.slider_height ? 80                       # height of slider
     slider_color  = chartOpts?.slider_color ? "#E6E6E6"                 # color of slider bar
     button_color  = chartOpts?.button_color ? "#E6E6E6"                 # color of rectangular part of buttons
@@ -143,6 +144,7 @@ ipleiotropy = (widgetdiv, lod_data, pxg_data, chartOpts) ->
         rotate_ylab:scat_rotate_ylab
         axispos:scat_axispos
         titlepos:scat_titlepos
+        title:scat_title
         xNA:{handle:false,force:false}
         yNA:{handle:false,force:false}
         rectcolor:rectcolor
@@ -210,9 +212,9 @@ ipleiotropy = (widgetdiv, lod_data, pxg_data, chartOpts) ->
                 if g < 0 then "(#{glab})" else "#{glab}")
 
             if v[0] > v[1] # make sure the genotypes show in the right order
-                indtip.html((d,i) -> "#{pxg_data.indID[i]}: #{g2_lab[i]}&rarr;#{g1_lab[i]}")
+                d3panels.tooltip_text(indtip, (d,i) -> "#{pxg_data.indID[i]}: #{g2_lab[i]}&rarr;#{g1_lab[i]}")
             else
-                indtip.html((d,i) -> "#{pxg_data.indID[i]}: #{g1_lab[i]}&rarr;#{g2_lab[i]}")
+                d3panels.tooltip_text(indtip, (d,i) -> "#{pxg_data.indID[i]}: #{g1_lab[i]}&rarr;#{g2_lab[i]}")
 
             if lod_data.lod?
                 lod_points.attr("cx", (d,i) -> mylodchart.xscale()[lod_data.chr[0]](marker_pos[v[i]]))

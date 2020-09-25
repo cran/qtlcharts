@@ -4,8 +4,7 @@
 \alias{itriplot}
 \title{Interactive plot of trinomial probabilities}
 \usage{
-itriplot(p, indID = NULL, group = NULL, chartOpts = NULL,
-  digits = 5)
+itriplot(p, indID = NULL, group = NULL, chartOpts = NULL, digits = 5)
 }
 \arguments{
 \item{p}{Matrix of trinomial probabilities (n x 3); each row should sum to 1.}
@@ -21,7 +20,7 @@ element must be named using the corresponding option.}
 before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
-An object of class \code{htmlwidget} that will
+An object of class `htmlwidget` that will
 intelligently print itself into HTML in a variety of contexts
 including the R console, within R Markdown documents, and within
 Shiny output bindings.
@@ -40,6 +39,6 @@ itriplot(p, group=g)}
 
 }
 \seealso{
-\code{\link{iplot}}, \code{\link{iplotPXG}}, \code{\link{idotplot}}
+[iplot()], [iplotPXG()], [idotplot()]
 }
 \keyword{hplot}

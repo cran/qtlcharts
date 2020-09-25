@@ -6,21 +6,19 @@
 \alias{qtlcharts}
 \title{R/qtlcharts: Interactive charts for QTL data}
 \description{
-A QTL is a \emph{quantitative trait locus}: a genetic locus that
+A QTL is a *quantitative trait locus*: a genetic locus that
 contributes to variation in a quantitative trait. The goal of
-\href{http://kbroman.org/qtlcharts}{R/qtlcharts} is to provide
+[R/qtlcharts](https://kbroman.org/qtlcharts/) is to provide
 interactive data visualizations for QTL analyses, and to make these
 visualizations available from R. It is a companion to the
-\href{http://www.rqtl.org}{R/qtl} package.
+[R/qtl](https://rqtl.org) package.
 }
 \details{
-Vignettes online at the \href{http://kbroman.org/qtlcharts}{R/qtlcharts website}:
+Vignettes online at the [R/qtlcharts website](https://kbroman.org/qtlcharts/):
 
-\itemize{
-\item \href{http://kbroman.org/qtlcharts/assets/vignettes/userGuide.html}{User guide}
-\item \href{http://kbroman.org/qtlcharts/assets/vignettes/develGuide.html}{Developer guide}
-\item \href{http://kbroman.org/qtlcharts/assets/vignettes/Rmarkdown.html}{Use with R Markdown}
-  [\href{https://github.com/kbroman/qtlcharts/blob/gh-pages/assets/vignettes/Rmarkdown.Rmd}{Rmd source}]
-\item \href{http://kbroman.org/qtlcharts/assets/vignettes/chartOpts.html}{List of chart customization options}
-}
+- [User guide](https://kbroman.org/qtlcharts/assets/vignettes/userGuide.html)
+- [Developer guide](https://kbroman.org/qtlcharts/assets/vignettes/develGuide.html)
+- [Use with R Markdown](https://kbroman.org/qtlcharts/assets/vignettes/Rmarkdown.html)
+  \[[Rmd source](https://github.com/kbroman/qtlcharts/blob/gh-pages/assets/vignettes/Rmarkdown.Rmd)\]
+- [List of chart customization options](https://kbroman.org/qtlcharts/assets/vignettes/chartOpts.html)
 }

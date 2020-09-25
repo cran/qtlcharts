@@ -4,8 +4,7 @@
 \alias{idotplot}
 \title{Interactive phenotype x genotype plot}
 \usage{
-idotplot(x, y, indID = NULL, group = NULL, chartOpts = NULL,
-  digits = 5)
+idotplot(x, y, indID = NULL, group = NULL, chartOpts = NULL, digits = 5)
 }
 \arguments{
 \item{x}{Vector of groups of individuals (e.g., a genotype)}
@@ -23,7 +22,7 @@ element must be named using the corresponding option.}
 before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
-An object of class \code{htmlwidget} that will
+An object of class `htmlwidget` that will
 intelligently print itself into HTML in a variety of contexts
 including the R console, within R Markdown documents, and within
 Shiny output bindings.
@@ -40,6 +39,6 @@ idotplot(g, y)}
 
 }
 \seealso{
-\code{\link{iplot}}, \code{\link{iplotPXG}}
+[iplot()], [iplotPXG()]
 }
 \keyword{hplot}

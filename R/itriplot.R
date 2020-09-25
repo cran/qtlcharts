@@ -14,13 +14,13 @@
 #' @param digits Round data to this number of significant digits
 #'     before passing to the chart function. (Use NULL to not round.)
 #'
-#' @return An object of class \code{htmlwidget} that will
+#' @return An object of class `htmlwidget` that will
 #' intelligently print itself into HTML in a variety of contexts
 #' including the R console, within R Markdown documents, and within
 #' Shiny output bindings.
 #'
 #' @keywords hplot
-#' @seealso \code{\link{iplot}}, \code{\link{iplotPXG}}, \code{\link{idotplot}}
+#' @seealso [iplot()], [iplotPXG()], [idotplot()]
 #'
 #' @examples
 #' n <- 100
@@ -42,6 +42,10 @@ function(p, indID=NULL, group=NULL, chartOpts=NULL, digits=5)
         indID <- get_indID(n, rownames(p), names(group))
     stopifnot(length(indID) == n)
     indID <- as.character(indID)
+
+    if(!is.null(colnames(p))) { # if column names for probabilities, use as labels
+        chartOpts <- add2chartOpts(chartOpts, labels=colnames(p))
+    }
 
     if(is.null(group)) group <- rep(1, n)
     group_levels <- sort(unique(group))

@@ -4,8 +4,15 @@
 \alias{iplotCurves}
 \title{Plot of a bunch of curves, linked to points in scatterplots}
 \usage{
-iplotCurves(curveMatrix, times = NULL, scatter1 = NULL,
-  scatter2 = NULL, group = NULL, chartOpts = NULL, digits = 5)
+iplotCurves(
+  curveMatrix,
+  times = NULL,
+  scatter1 = NULL,
+  scatter2 = NULL,
+  group = NULL,
+  chartOpts = NULL,
+  digits = 5
+)
 }
 \arguments{
 \item{curveMatrix}{Matrix (dim n_ind x n_times) with outcomes}
@@ -29,7 +36,7 @@ corresponding option.}
 before passing to the chart function. (Use NULL to not round.)}
 }
 \value{
-An object of class \code{htmlwidget} that will
+An object of class `htmlwidget` that will
 intelligently print itself into HTML in a variety of contexts
 including the R console, within R Markdown documents, and within
 Shiny output bindings.
@@ -62,6 +69,6 @@ iplotCurves(y, times, y[,c(1,5)], y[,c(5,16)],
 
 }
 \seealso{
-\code{\link{iplotCorr}}, \code{\link{iplot}}, \code{\link{scat2scat}}
+[iplotCorr()], [iplot()], [scat2scat()]
 }
 \keyword{hplot}
