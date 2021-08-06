@@ -71,8 +71,7 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
     corr = []
     for i of data.corr
         for j of data.corr[i]
-            corr.push({row:i, col:j, value:data.corr[i][j]})
-
+            corr.push({row:+i, col:+j, value:data.corr[i][j]})
 
     # gray background on scatterplot
     scatterplot.append("rect")
@@ -94,7 +93,7 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
                .attr("fill", (d) -> corZscale(d.value))
                .attr("stroke", "none")
                .attr("stroke-width", 2)
-               .on("mouseover", (d) ->
+               .on("mouseover", (event,d) ->
                      d3.select(this).attr("stroke", "black")
                      corrplot.append("text").attr("class","corrlabel")
                              .attr("x", corXscale(d.col)+pixel_width/2)
@@ -108,10 +107,11 @@ iplotCorr = (widgetdiv, data, chartOpts) ->
                              .text(data.var[data.rows[d.row]])
                              .attr("dominant-baseline", "middle")
                              .attr("text-anchor", "end"))
-               .on("mouseout", (d) ->
+               .on("mouseout", () ->
                      d3.selectAll("text.corrlabel").remove()
                      d3.select(this).attr("stroke","none"))
-               .on("click",(d) -> drawScatter(d.col, d.row))
+               .on("click",(event,d) -> drawScatter(d.col, d.row))
+
 
     corr_tip = d3panels.tooltip_create(d3.select(widgetdiv), cells,
                                        {tipclass:widgetdivid},

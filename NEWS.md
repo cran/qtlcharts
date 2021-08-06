@@ -1,3 +1,17 @@
+## qtlcharts 0.14 (2021-08-05)
+
+- Upgrade D3 to 7.0.0 (and d3panels to 1.8.0)
+
+- Allow `iplot()` to not take `y` argument (in which case we move `x`
+  to `y` and take `x` to be indices). (Issue #73)
+
+- Add `horizontal` argument to `iplotMap()` to lay out the chromosomes
+  horizontally. This was already available as a chartOpts option, but
+  this makes it easier. (Issue #67)
+
+- Fix error in `itriplot()` for case of a single point (Issue #76)
+
+
 ## qtlcharts 0.12-10 (2020-09-24)
 
 - Replaced use of [d3-tip](https://github.com/Caged/d3-tip) with

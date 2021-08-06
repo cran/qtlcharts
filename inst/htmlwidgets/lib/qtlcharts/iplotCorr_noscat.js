@@ -70,8 +70,8 @@ iplotCorr_noscat = function iplotCorr_noscat(widgetdiv, data, chartOpts) {
   for (i in data.corr) {
     for (j in data.corr[i]) {
       corr.push({
-        row: i,
-        col: j,
+        row: +i,
+        col: +j,
         value: data.corr[i][j]
       });
     }
@@ -83,11 +83,11 @@ iplotCorr_noscat = function iplotCorr_noscat(widgetdiv, data, chartOpts) {
     return corYscale(d.row);
   }).attr("width", Math.abs(corXscale(1) - corXscale(0))).attr("height", Math.abs(corYscale(0) - corYscale(1))).attr("fill", function (d) {
     return corZscale(d.value);
-  }).attr("stroke", "none").attr("stroke-width", 2).on("mouseover", function (d) {
+  }).attr("stroke", "none").attr("stroke-width", 2).on("mouseover", function (event, d) {
     d3.select(this).attr("stroke", "black");
     corrplot.append("text").attr("class", "corrlabel").attr("x", corXscale(d.col) + pixel_width / 2).attr("y", panelheight + margin.bottom * 0.2).text(data.var[data.cols[d.col]]).attr("dominant-baseline", "middle").attr("text-anchor", "middle");
     return corrplot.append("text").attr("class", "corrlabel").attr("y", corYscale(d.row) + pixel_height / 2).attr("x", -margin.left * 0.1).text(data.var[data.rows[d.row]]).attr("dominant-baseline", "middle").attr("text-anchor", "end");
-  }).on("mouseout", function (d) {
+  }).on("mouseout", function () {
     d3.selectAll("text.corrlabel").remove();
     return d3.select(this).attr("stroke", "none");
   });
