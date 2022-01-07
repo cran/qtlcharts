@@ -1,3 +1,11 @@
+## qtlcharts 0.16 (2022-01-07)
+
+- Update d3panels to 1.8.2, with improvement to `formatAxis()`.
+  This should fix Issue #77.
+
+- Fix `qtlchartsversion()` to handle case like "0.14"
+
+
 ## qtlcharts 0.14 (2021-08-05)
 
 - Upgrade D3 to 7.0.0 (and d3panels to 1.8.0)
@@ -102,7 +110,7 @@
 ## qtlcharts 0.8-2 (2017-05-11)
 
 - Updated to use [D3](https://d3js.org)
-  [version 4](https://github.com/d3/d3/blob/master/API.md).
+  [version 4](https://github.com/d3/d3/blob/main/API.md).
 
 - Also updated d3panels, d3-tip, jquery, and jquery-ui.
 

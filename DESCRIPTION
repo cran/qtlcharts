@@ -1,6 +1,6 @@
 Package: qtlcharts
-Version: 0.14
-Date: 2021-08-05
+Version: 0.16
+Date: 2022-01-07
 Title: Interactive Graphics for QTL Experiments
 Author: Karl W Broman [aut, cre] (<https://orcid.org/0000-0002-4914-6671>),
   Michael Bostock [ctb, cph] (d3.js library in htmlwidgets/lib,
@@ -27,7 +27,7 @@ BugReports: https://github.com/kbroman/qtlcharts/issues
 LazyData: true
 Encoding: UTF-8
 ByteCompile: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Authors@R: c(
     person("Karl W", "Broman", role=c("aut", "cre"), email="broman@wisc.edu",
            comment=c(ORCID = "0000-0002-4914-6671")),
@@ -40,6 +40,6 @@ Authors@R: c(
     person("jQuery UI contributors", role = "ctb",
            comment = "jQuery UI library in htmlwidgets/lib; see https://jqueryui.com/about/"))
 NeedsCompilation: no
-Packaged: 2021-08-05 20:05:25 UTC; kbroman
+Packaged: 2022-01-07 21:58:04 UTC; kbroman
 Repository: CRAN
-Date/Publication: 2021-08-06 04:50:06 UTC
+Date/Publication: 2022-01-07 22:52:41 UTC
