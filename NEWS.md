@@ -1,6 +1,15 @@
+## qtlcharts 0.18 (2025-05-10)
+
+- In CITATION file, change `citEntry()` to `bibentry()`.
+
+- Upgrade d3 to 7.9.0 (and d3panels to 1.8.5)
+
+- Upgrade jquery to 3.7.1
+
+
 ## qtlcharts 0.16 (2022-01-07)
 
-- Update d3panels to 1.8.2, with improvement to `formatAxis()`.
+- Update d3panels to 1.8.4, with improvement to `formatAxis()`.
   This should fix Issue #77.
 
 - Fix `qtlchartsversion()` to handle case like "0.14"
@@ -202,7 +211,7 @@
 - Got the package working with
   [jsonlite](https://github.com/jeroen/jsonlite), as
   [htmlwidgets](https://www.htmlwidgets.org) has now switched from
-  [RJSONIO](http://www.omegahat.net/RJSONIO/) to jsonlite, for
+  [RJSONIO](https://www.omegahat.net/RJSONIO/) to jsonlite, for
   converting R objects to [JSON](https://www.json.org/json-en.html).
 
 
@@ -228,7 +237,7 @@
 - Refactored the entire package to use
   [htmlwidgets](https://www.htmlwidgets.org).
   A big advantage is that the charts now work nicely within
-  [RStudio](https://www.rstudio.com/products/RStudio/).
+  [RStudio](https://posit.co/products/open-source/rstudio/)
 
 - To save a plot to a file, you now need to assign the result of a plot
   function to an object and then use the
